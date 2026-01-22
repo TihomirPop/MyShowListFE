@@ -1,5 +1,61 @@
 <script lang="ts">
 	import { authStore } from '$lib/stores/auth.svelte';
+	import { getShowsAPI } from '$lib/api/client';
+	import type { ShowDto } from '$lib/types/show';
+	import { onMount } from 'svelte';
+
+	let shows = $state<ShowDto[]>([]);
+	let isLoading = $state(true);
+	let error = $state<string | null>(null);
+
+	onMount(async () => {
+		await loadShows();
+	});
+
+	async function loadShows() {
+		if (!authStore.token) {
+			error = 'Not authenticated';
+			isLoading = false;
+			return;
+		}
+
+		isLoading = true;
+		error = null;
+
+		try {
+			const response = await getShowsAPI(authStore.token);
+
+			if ('shows' in response) {
+				shows = response.shows;
+			} else {
+				error = response.message || 'Failed to load shows';
+			}
+		} catch (err) {
+			if (err instanceof Error) {
+				error = err.message;
+			} else {
+				error = 'An unexpected error occurred';
+			}
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	function formatScore(score: number | null): string {
+		if (score === null) return 'No rating';
+		return score.toFixed(1);
+	}
+
+	function getPlaceholderGradient(index: number): string {
+		const gradients = [
+			'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+			'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+			'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+			'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+			'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+		];
+		return gradients[index % gradients.length];
+	}
 </script>
 
 <svelte:head>
@@ -16,6 +72,49 @@
 		<h2>Hello World</h2>
 		<p>This is your authenticated home page. You're successfully logged in!</p>
 	</div>
+
+	<section class="shows-section">
+		<h2>All Shows</h2>
+
+		{#if isLoading}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading shows...</p>
+			</div>
+		{:else if error}
+			<div class="error-state">
+				<p class="error-message">{error}</p>
+				<button onclick={loadShows} class="retry-button">Try Again</button>
+			</div>
+		{:else if shows.length === 0}
+			<div class="empty-state">
+				<p>No shows available yet.</p>
+				<p class="hint">Check back later for new content!</p>
+			</div>
+		{:else}
+			<div class="shows-grid">
+				{#each shows as show, index (show.id)}
+					<div class="show-card">
+						<div class="show-thumbnail" style="background: {getPlaceholderGradient(index)};">
+							<span class="show-type-badge">{show.type === 'MOVIE' ? 'Movie' : 'TV'}</span>
+						</div>
+						<div class="show-info">
+							<h3>{show.title}</h3>
+							<div class="show-score">
+								<span class="score-icon">⭐</span>
+								<span class="score-value">{formatScore(show.averageScore)}</span>
+							</div>
+							{#if show.genres.length > 0}
+								<div class="show-genres">
+									{show.genres.slice(0, 3).join(' • ')}
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</section>
 
 	<div class="features">
 		<div class="feature-card">
@@ -154,6 +253,166 @@
 		line-height: 1.6;
 	}
 
+	.shows-section {
+		margin-bottom: 3rem;
+	}
+
+	.shows-section h2 {
+		margin: 0 0 1.5rem 0;
+		font-size: 1.75rem;
+		color: #1a202c;
+	}
+
+	.loading-state {
+		text-align: center;
+		padding: 3rem;
+		color: #718096;
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		margin: 0 auto 1rem;
+		border: 3px solid #e2e8f0;
+		border-top-color: #667eea;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.error-state {
+		text-align: center;
+		padding: 2rem;
+		background: #fff5f5;
+		border-radius: 0.75rem;
+		border: 1px solid #fc8181;
+	}
+
+	.error-message {
+		color: #c53030;
+		margin: 0 0 1rem 0;
+	}
+
+	.retry-button {
+		background: #667eea;
+		color: white;
+		padding: 0.75rem 1.5rem;
+		border: none;
+		border-radius: 0.5rem;
+		cursor: pointer;
+		font-size: 0.95rem;
+		transition: background 0.2s;
+	}
+
+	.retry-button:hover {
+		background: #5568d3;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 3rem;
+		background: #f7fafc;
+		border-radius: 0.75rem;
+		border: 2px dashed #cbd5e0;
+	}
+
+	.empty-state p {
+		margin: 0.5rem 0;
+		color: #718096;
+	}
+
+	.empty-state .hint {
+		font-size: 0.9rem;
+		color: #a0aec0;
+	}
+
+	.shows-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.show-card {
+		background: white;
+		border-radius: 0.75rem;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		transition: transform 0.2s, box-shadow 0.2s;
+		overflow: hidden;
+		cursor: pointer;
+	}
+
+	.show-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+	}
+
+	.show-thumbnail {
+		width: 100%;
+		height: 200px;
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.show-type-badge {
+		background: rgba(255, 255, 255, 0.9);
+		color: #2d3748;
+		padding: 0.375rem 0.75rem;
+		border-radius: 0.375rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.025em;
+	}
+
+	.show-info {
+		padding: 1.25rem;
+	}
+
+	.show-info h3 {
+		margin: 0 0 0.75rem 0;
+		font-size: 1.125rem;
+		color: #2d3748;
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.show-score {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.score-icon {
+		font-size: 1.125rem;
+	}
+
+	.score-value {
+		font-weight: 600;
+		color: #667eea;
+		font-size: 1rem;
+	}
+
+	.show-genres {
+		font-size: 0.85rem;
+		color: #718096;
+		margin-top: 0.5rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	@media (max-width: 768px) {
 		.container {
 			padding: 1.5rem 1rem;
@@ -169,6 +428,18 @@
 
 		.hello-world h2 {
 			font-size: 1.5rem;
+		}
+
+		.shows-section h2 {
+			font-size: 1.5rem;
+		}
+
+		.shows-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.show-thumbnail {
+			height: 180px;
 		}
 
 		.features {

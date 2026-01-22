@@ -1,4 +1,5 @@
 import type { LoginRequest, LoginResponse, RegisterResponse } from '$lib/types/auth';
+import type { ShowResponse } from '$lib/types/show';
 
 // Get base URL from environment variable, fallback to relative path for production
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -68,4 +69,10 @@ export async function authenticatedRequest<T>(
 	options: RequestInit = {}
 ): Promise<T> {
 	return request<T>(endpoint, options, token);
+}
+
+export async function getShowsAPI(token: string): Promise<ShowResponse> {
+	return authenticatedRequest<ShowResponse>('/shows', token, {
+		method: 'GET'
+	});
 }
