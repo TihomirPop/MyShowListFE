@@ -2,6 +2,7 @@
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { getShowsAPI } from '$lib/api/client';
 	import type { ShowDto } from '$lib/types/show';
+	import { formatScore, getPlaceholderGradient } from '$lib/utils/show';
 	import { onMount } from 'svelte';
 
 	let shows = $state<ShowDto[]>([]);
@@ -39,22 +40,6 @@
 		} finally {
 			isLoading = false;
 		}
-	}
-
-	function formatScore(score: number | null): string {
-		if (score === null) return 'No rating';
-		return score.toFixed(1);
-	}
-
-	function getPlaceholderGradient(index: number): string {
-		const gradients = [
-			'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-			'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-			'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-			'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-			'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
-		];
-		return gradients[index % gradients.length];
 	}
 </script>
 
@@ -94,23 +79,25 @@
 		{:else}
 			<div class="shows-grid">
 				{#each shows as show, index (show.id)}
-					<div class="show-card">
-						<div class="show-thumbnail" style="background: {getPlaceholderGradient(index)};">
-							<span class="show-type-badge">{show.type === 'MOVIE' ? 'Movie' : 'TV'}</span>
-						</div>
-						<div class="show-info">
-							<h3>{show.title}</h3>
-							<div class="show-score">
-								<span class="score-icon">⭐</span>
-								<span class="score-value">{formatScore(show.averageScore)}</span>
+					<a href="/shows/{show.id}" class="show-card-link">
+						<article class="show-card">
+							<div class="show-thumbnail" style="background: {getPlaceholderGradient(index)};">
+								<span class="show-type-badge">{show.type === 'MOVIE' ? 'Movie' : 'TV'}</span>
 							</div>
-							{#if show.genres.length > 0}
-								<div class="show-genres">
-									{show.genres.slice(0, 3).join(' • ')}
+							<div class="show-info">
+								<h3>{show.title}</h3>
+								<div class="show-score">
+									<span class="score-icon">⭐</span>
+									<span class="score-value">{formatScore(show.averageScore)}</span>
 								</div>
-							{/if}
-						</div>
-					</div>
+								{#if show.genres.length > 0}
+									<div class="show-genres">
+										{show.genres.slice(0, 3).join(' • ')}
+									</div>
+								{/if}
+							</div>
+						</article>
+					</a>
 				{/each}
 			</div>
 		{/if}
@@ -337,16 +324,22 @@
 		gap: 1.5rem;
 	}
 
+	.show-card-link {
+		text-decoration: none;
+		color: inherit;
+		display: block;
+	}
+
 	.show-card {
 		background: white;
 		border-radius: 0.75rem;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 		transition: transform 0.2s, box-shadow 0.2s;
 		overflow: hidden;
-		cursor: pointer;
+		height: 100%;
 	}
 
-	.show-card:hover {
+	.show-card-link:hover .show-card {
 		transform: translateY(-4px);
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 	}

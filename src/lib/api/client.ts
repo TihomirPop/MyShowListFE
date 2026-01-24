@@ -1,5 +1,11 @@
 import type { LoginRequest, LoginResponse, RegisterResponse } from '$lib/types/auth';
-import type { ShowResponse } from '$lib/types/show';
+import type {
+	ShowResponse,
+	SingleShowResponse,
+	SingleShowResponseOk,
+	SingleShowResponseNotFound,
+	SingleShowResponseFailure
+} from '$lib/types/show';
 
 // Get base URL from environment variable, fallback to relative path for production
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -33,17 +39,26 @@ async function request<T>(
 		headers
 	});
 
-	// Handle non-JSON responses
-	const contentType = response.headers.get('content-type');
-	if (!contentType || !contentType.includes('application/json')) {
-		throw new ApiError('Server returned non-JSON response', response.status);
-	}
-
-	const data = await response.json();
-
+	// Handle non-2xx responses
 	if (!response.ok) {
-		throw new ApiError(data.message || 'Request failed', response.status);
+		// For 404, don't try to parse JSON body
+		if (response.status === 404) {
+			throw new ApiError('Not found', response.status);
+		}
+
+		// Try to parse error message from JSON
+		const contentType = response.headers.get('content-type');
+		if (contentType && contentType.includes('application/json')) {
+			const data = await response.json();
+			throw new ApiError(data.message || 'Request failed', response.status);
+		}
+
+		// Non-JSON error response
+		throw new ApiError('Request failed', response.status);
 	}
+
+	// Parse successful JSON response
+	const data = await response.json();
 
 	return data as T;
 }
@@ -75,4 +90,29 @@ export async function getShowsAPI(token: string): Promise<ShowResponse> {
 	return authenticatedRequest<ShowResponse>('/shows', token, {
 		method: 'GET'
 	});
+}
+
+export async function getShowByIdAPI(
+	showId: string,
+	token: string
+): Promise<SingleShowResponse> {
+	try {
+		const response = await authenticatedRequest<SingleShowResponseOk>(`/shows/${showId}`, token, {
+			method: 'GET'
+		});
+		return response;
+	} catch (error) {
+		if (error instanceof ApiError) {
+			// 404 Not Found
+			if (error.status === 404) {
+				return {} as SingleShowResponseNotFound;
+			}
+			// 500 Server Error or other errors
+			return { message: error.message } as SingleShowResponseFailure;
+		}
+		// Unexpected error
+		return {
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as SingleShowResponseFailure;
+	}
 }

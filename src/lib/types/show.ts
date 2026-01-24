@@ -34,3 +34,38 @@ export interface ShowResponseFailure {
 }
 
 export type ShowResponse = ShowResponseOk | ShowResponseFailure;
+
+// Single show API response types (DOP pattern - sealed interface)
+export interface SingleShowResponseOk {
+	show: ShowDto;
+}
+
+export interface SingleShowResponseNotFound {
+	// Empty - just indicates not found
+}
+
+export interface SingleShowResponseFailure {
+	message: string;
+}
+
+export type SingleShowResponse =
+	| SingleShowResponseOk
+	| SingleShowResponseNotFound
+	| SingleShowResponseFailure;
+
+// Type guards for discriminating SingleShowResponse types
+export function isSingleShowOk(response: SingleShowResponse): response is SingleShowResponseOk {
+	return 'show' in response;
+}
+
+export function isSingleShowNotFound(
+	response: SingleShowResponse
+): response is SingleShowResponseNotFound {
+	return !('show' in response) && !('message' in response);
+}
+
+export function isSingleShowFailure(
+	response: SingleShowResponse
+): response is SingleShowResponseFailure {
+	return 'message' in response;
+}
