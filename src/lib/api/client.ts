@@ -6,6 +6,22 @@ import type {
 	SingleShowResponseNotFound,
 	SingleShowResponseFailure
 } from '$lib/types/show';
+import type {
+	GetReviewsResponse,
+	GetReviewsResponseOk,
+	GetReviewsResponseNotFound,
+	GetReviewsResponseFailure,
+	ReviewMutationResponse,
+	ReviewMutationResponseOk,
+	ReviewMutationResponseNotFound,
+	ReviewMutationResponseBadRequest,
+	ReviewMutationResponseFailure,
+	DeleteReviewResponse,
+	DeleteReviewResponseOk,
+	DeleteReviewResponseNotFound,
+	DeleteReviewResponseFailure,
+	ReviewRequest
+} from '$lib/types/review';
 
 // Get base URL from environment variable, fallback to relative path for production
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -55,6 +71,18 @@ async function request<T>(
 
 		// Non-JSON error response
 		throw new ApiError('Request failed', response.status);
+	}
+
+	// Handle 204 No Content (DELETE success) or 200 with no body
+	if (response.status === 204) {
+		return {} as T; // Return empty object for void responses
+	}
+
+	// Check if response has content before parsing JSON
+	const contentType = response.headers.get('content-type');
+	if (!contentType || !contentType.includes('application/json')) {
+		// Response has no JSON body (e.g., 200 OK with empty body)
+		return {} as T;
 	}
 
 	// Parse successful JSON response
@@ -114,5 +142,88 @@ export async function getShowByIdAPI(
 		return {
 			message: error instanceof Error ? error.message : 'An unexpected error occurred'
 		} as SingleShowResponseFailure;
+	}
+}
+
+/**
+ * Fetch all reviews for a show (requires authentication)
+ */
+export async function getReviewsAPI(showId: string, token: string): Promise<GetReviewsResponse> {
+	try {
+		const response = await authenticatedRequest<GetReviewsResponseOk>(
+			`/shows/${showId}/reviews`,
+			token,
+			{
+				method: 'GET'
+			}
+		);
+		return response;
+	} catch (error) {
+		if (error instanceof ApiError) {
+			if (error.status === 404) {
+				return {} as GetReviewsResponseNotFound;
+			}
+			return { message: error.message } as GetReviewsResponseFailure;
+		}
+		return {
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as GetReviewsResponseFailure;
+	}
+}
+
+/**
+ * Add or update a review (authenticated)
+ */
+export async function addOrUpdateReviewAPI(
+	showId: string,
+	reviewText: string,
+	token: string
+): Promise<ReviewMutationResponse> {
+	try {
+		// Backend accepts both POST and PUT for upsert
+		await authenticatedRequest<void>(`/shows/${showId}/reviews`, token, {
+			method: 'POST',
+			body: JSON.stringify({ reviewText } as ReviewRequest)
+		});
+		return {} as ReviewMutationResponseOk;
+	} catch (error) {
+		if (error instanceof ApiError) {
+			if (error.status === 404) {
+				return {} as ReviewMutationResponseNotFound;
+			}
+			if (error.status === 400) {
+				return { message: error.message } as ReviewMutationResponseBadRequest;
+			}
+			return { message: error.message } as ReviewMutationResponseFailure;
+		}
+		return {
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as ReviewMutationResponseFailure;
+	}
+}
+
+/**
+ * Delete a review (authenticated)
+ */
+export async function deleteReviewAPI(
+	showId: string,
+	token: string
+): Promise<DeleteReviewResponse> {
+	try {
+		// Backend returns 204 No Content on success
+		await authenticatedRequest<void>(`/shows/${showId}/reviews`, token, {
+			method: 'DELETE'
+		});
+		return {} as DeleteReviewResponseOk;
+	} catch (error) {
+		if (error instanceof ApiError) {
+			if (error.status === 404) {
+				return {} as DeleteReviewResponseNotFound;
+			}
+			return { message: error.message } as DeleteReviewResponseFailure;
+		}
+		return {
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as DeleteReviewResponseFailure;
 	}
 }

@@ -4,7 +4,8 @@ import { getShowByIdAPI } from '$lib/api/client';
 import {
 	isSingleShowOk,
 	isSingleShowNotFound,
-	isSingleShowFailure
+	isSingleShowFailure,
+	type SingleShowResponseFailure
 } from '$lib/types/show';
 import type { PageLoad } from './$types';
 
@@ -24,16 +25,11 @@ export const load: PageLoad = async ({ params }) => {
 		return {
 			show: response.show
 		};
-	}
-
-	if (isSingleShowNotFound(response)) {
+	} else if (isSingleShowNotFound(response)) {
 		throw error(404, 'Show not found');
+	} else {
+		// Handle failure case - type assertion needed due to TypeScript narrowing limitations
+		const failureResponse = response as SingleShowResponseFailure;
+		throw error(500, failureResponse.message || 'Failed to load show');
 	}
-
-	if (isSingleShowFailure(response)) {
-		throw error(500, response.message || 'Failed to load show');
-	}
-
-	// Should never reach here due to exhaustive type checking
-	throw error(500, 'Unexpected response');
 };

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { formatScore, getPlaceholderGradient } from '$lib/utils/show';
+	import Reviews from '$lib/components/Reviews.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -85,10 +86,8 @@
 		<p class="show-description">{show.description}</p>
 	</div>
 
-	<!-- Future sections placeholder -->
-	<div class="coming-soon">
-		<p>Reviews and user tracking features coming soon!</p>
-	</div>
+	<!-- Reviews section -->
+	<Reviews showId={show.id} />
 </div>
 
 <style>
@@ -234,15 +233,6 @@
 		color: #4a5568;
 		line-height: 1.7;
 		margin: 0;
-	}
-
-	.coming-soon {
-		text-align: center;
-		padding: 2rem;
-		background: #f7fafc;
-		border-radius: 0.75rem;
-		border: 2px dashed #cbd5e0;
-		color: #718096;
 	}
 
 	@media (max-width: 768px) {
