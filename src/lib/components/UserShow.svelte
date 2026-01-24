@@ -82,6 +82,28 @@
 		isUpdating = false;
 	}
 
+	async function handleScoreChange(event: Event) {
+		if (!authStore.token || !userShow) return;
+		const target = event.target as HTMLSelectElement;
+		const newScore = parseInt(target.value, 10);
+
+		isUpdating = true;
+		updateError = null;
+
+		const response = await upsertUserShowAPI(
+			{ showId, progress: userShow.progress, status: userShow.status, score: newScore },
+			authStore.token
+		);
+
+		if ('message' in response) {
+			updateError = response.message || 'Failed to update score';
+			target.value = userShow.score.toString(); // Revert on error
+		} else {
+			userShow = { ...userShow, score: newScore };
+		}
+		isUpdating = false;
+	}
+
 	async function updateProgress(newProgress: number) {
 		if (!authStore.token || !userShow) return;
 
@@ -162,6 +184,22 @@
 				>
 					{#each getAllStatusOptions() as option (option.value)}
 						<option value={option.value}>{option.label}</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="control-group">
+				<label for="score-select" class="control-label">Score:</label>
+				<select
+					id="score-select"
+					class="score-select"
+					value={userShow.score}
+					onchange={handleScoreChange}
+					disabled={isUpdating}
+				>
+					<option value={0}>Select</option>
+					{#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as score (score)}
+						<option value={score}>{score}</option>
 					{/each}
 				</select>
 			</div>
@@ -280,6 +318,34 @@
 		background: #f7fafc;
 	}
 
+	.score-select {
+		padding: 0.5rem 1rem;
+		border: 1px solid #e2e8f0;
+		border-radius: 0.375rem;
+		background: white;
+		color: #2d3748;
+		font-size: 0.95rem;
+		cursor: pointer;
+		transition: border-color 0.2s;
+		min-width: 120px;
+	}
+
+	.score-select:hover:not(:disabled) {
+		border-color: #cbd5e0;
+	}
+
+	.score-select:focus {
+		outline: none;
+		border-color: #667eea;
+		box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+	}
+
+	.score-select:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		background: #f7fafc;
+	}
+
 	.progress-input-wrapper {
 		display: flex;
 		align-items: center;
@@ -372,7 +438,8 @@
 			gap: 1rem;
 		}
 
-		.status-select {
+		.status-select,
+		.score-select {
 			width: 100%;
 		}
 	}
