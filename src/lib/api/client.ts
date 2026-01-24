@@ -22,6 +22,18 @@ import type {
 	DeleteReviewResponseFailure,
 	ReviewRequest
 } from '$lib/types/review';
+import type {
+	GetUserShowsResponse,
+	GetUserShowsResponseOk,
+	GetUserShowsResponseNotFound,
+	GetUserShowsResponseFailure,
+	UpsertUserShowResponse,
+	UpsertUserShowResponseOk,
+	UpsertUserShowResponseNotFound,
+	UpsertUserShowResponseBadRequest,
+	UpsertUserShowResponseFailure,
+	UpsertUserShowRequest
+} from '$lib/types/user-show';
 
 // Get base URL from environment variable, fallback to relative path for production
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -225,5 +237,56 @@ export async function deleteReviewAPI(
 		return {
 			message: error instanceof Error ? error.message : 'An unexpected error occurred'
 		} as DeleteReviewResponseFailure;
+	}
+}
+
+/**
+ * Fetch all user shows for the authenticated user
+ */
+export async function getUserShowsAPI(token: string): Promise<GetUserShowsResponse> {
+	try {
+		const response = await authenticatedRequest<GetUserShowsResponseOk>('/user-shows', token, {
+			method: 'GET'
+		});
+		return response;
+	} catch (error) {
+		if (error instanceof ApiError) {
+			if (error.status === 404) {
+				return {} as GetUserShowsResponseNotFound;
+			}
+			return { message: error.message } as GetUserShowsResponseFailure;
+		}
+		return {
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as GetUserShowsResponseFailure;
+	}
+}
+
+/**
+ * Add or update a user show (authenticated)
+ */
+export async function upsertUserShowAPI(
+	request: UpsertUserShowRequest,
+	token: string
+): Promise<UpsertUserShowResponse> {
+	try {
+		await authenticatedRequest<void>('/user-shows', token, {
+			method: 'POST',
+			body: JSON.stringify(request)
+		});
+		return {} as UpsertUserShowResponseOk;
+	} catch (error) {
+		if (error instanceof ApiError) {
+			if (error.status === 404) {
+				return {} as UpsertUserShowResponseNotFound;
+			}
+			if (error.status === 400) {
+				return { message: error.message } as UpsertUserShowResponseBadRequest;
+			}
+			return { message: error.message } as UpsertUserShowResponseFailure;
+		}
+		return {
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as UpsertUserShowResponseFailure;
 	}
 }

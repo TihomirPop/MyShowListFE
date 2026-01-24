@@ -2,6 +2,7 @@
 	import type { PageData } from './$types';
 	import { formatScore, getPlaceholderGradient } from '$lib/utils/show';
 	import Reviews from '$lib/components/Reviews.svelte';
+	import UserShow from '$lib/components/UserShow.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -77,6 +78,9 @@
 					{/each}
 				</div>
 			{/if}
+
+			<!-- User show tracking -->
+			<UserShow showId={show.id} initialUserShow={data.userShow} show={show} />
 		</div>
 	</div>
 
