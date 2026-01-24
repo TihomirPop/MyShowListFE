@@ -3,10 +3,24 @@
 	import { formatScore, getPlaceholderGradient } from '$lib/utils/show';
 	import Reviews from '$lib/components/Reviews.svelte';
 	import UserShow from '$lib/components/UserShow.svelte';
+	import { getShowByIdAPI } from '$lib/api/client';
+	import { authStore } from '$lib/stores/auth.svelte';
+	import { isSingleShowOk } from '$lib/types/show';
 
 	let { data }: { data: PageData } = $props();
 
-	const show = $derived(data.show);
+	let show = $state(data.show);
+
+	// Function to refresh show data from API
+	async function refreshShow() {
+		if (!authStore.token) return;
+
+		const response = await getShowByIdAPI(show.id, authStore.token);
+
+		if (isSingleShowOk(response)) {
+			show = response.show;
+		}
+	}
 
 	// Format dates based on show type
 	const formattedDate = $derived.by(() => {
@@ -80,7 +94,7 @@
 			{/if}
 
 			<!-- User show tracking -->
-			<UserShow showId={show.id} initialUserShow={data.userShow} show={show} />
+			<UserShow showId={show.id} initialUserShow={data.userShow} show={show} onScoreUpdated={refreshShow} />
 		</div>
 	</div>
 

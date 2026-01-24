@@ -9,11 +9,13 @@
 	let {
 		showId,
 		initialUserShow,
-		show
+		show,
+		onScoreUpdated
 	}: {
 		showId: string;
 		initialUserShow: UserShowDto | null;
 		show: ShowDto;
+		onScoreUpdated?: () => void;
 	} = $props();
 
 	// State
@@ -100,6 +102,10 @@
 			target.value = userShow.score.toString(); // Revert on error
 		} else {
 			userShow = { ...userShow, score: newScore };
+			// Notify parent component to refresh show data
+			if (onScoreUpdated) {
+				onScoreUpdated();
+			}
 		}
 		isUpdating = false;
 	}
