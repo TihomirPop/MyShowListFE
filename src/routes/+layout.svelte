@@ -63,7 +63,7 @@
 		<div class="nav-container">
 			<a href="/" class="nav-brand">MyShowList</a>
 			<div class="nav-items">
-				<span class="username">{authStore.user?.username}</span>
+				<a href="/mylist" class="username-link">{authStore.user?.username}</a>
 				<button onclick={() => authStore.logout()} class="logout-btn">
 					Logout
 				</button>
@@ -113,9 +113,17 @@
 		gap: 1.5rem;
 	}
 
-	.username {
+	.username-link {
 		color: white;
 		font-weight: 500;
+		text-decoration: none;
+		transition: opacity 0.2s;
+		cursor: pointer;
+	}
+
+	.username-link:hover {
+		opacity: 0.8;
+		text-decoration: underline;
 	}
 
 	.logout-btn {
@@ -150,7 +158,7 @@
 			font-size: 1.25rem;
 		}
 
-		.username {
+		.username-link {
 			display: none;
 		}
 

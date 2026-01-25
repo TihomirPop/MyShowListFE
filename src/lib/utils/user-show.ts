@@ -51,3 +51,32 @@ export function validateProgress(
 
 	return { valid: true, progress: parsed };
 }
+
+/**
+ * Get progress display with icon based on show type
+ */
+export function getProgressDisplay(userShow: import('$lib/types/user-show').UserShowDto): string {
+	const show = userShow.show;
+	const icon = show.type === 'MOVIE' ? '🎬' : '📺';
+
+	if (show.type === 'MOVIE') {
+		return `${icon} ${userShow.progress}/1`;
+	}
+
+	const total = show.episodeCount ?? '?';
+	return `${icon} ${userShow.progress}/${total}`;
+}
+
+/**
+ * Get status badge color scheme
+ */
+export function getStatusColor(status: string): { bg: string; text: string } {
+	const colors: Record<string, { bg: string; text: string }> = {
+		'watching': { bg: '#667eea', text: 'white' },
+		'completed': { bg: '#48bb78', text: 'white' },
+		'on hold': { bg: '#ed8936', text: 'white' },
+		'dropped': { bg: '#f56565', text: 'white' },
+		'plan to watch': { bg: '#4299e1', text: 'white' }
+	};
+	return colors[status] || { bg: '#718096', text: 'white' };
+}
