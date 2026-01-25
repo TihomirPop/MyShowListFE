@@ -47,6 +47,14 @@ import type {
 	DeleteShowResponseNotFound,
 	DeleteShowResponseFailure
 } from '$lib/types/delete-show';
+import type {
+	UpdateShowRequest,
+	UpdateShowResponse,
+	UpdateShowResponseSuccess,
+	UpdateShowResponseNotFound,
+	UpdateShowResponseGenresNotFound,
+	UpdateShowResponseFailure
+} from '$lib/types/update-show';
 
 // Get base URL from environment variable, fallback to relative path for production
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -408,5 +416,74 @@ export async function deleteShowAPI(
 		return {
 			message: error instanceof Error ? error.message : 'An unexpected error occurred'
 		} as DeleteShowResponseFailure;
+	}
+}
+
+/**
+ * Update an existing show (Movie or TV Series) - Admin only
+ */
+export async function updateShowAPI(
+	showId: string,
+	request: UpdateShowRequest,
+	token: string
+): Promise<UpdateShowResponse> {
+	try {
+		const response = await fetch(`${API_BASE_URL}/shows/${showId}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify(request)
+		});
+
+		// Handle 200 OK (success)
+		if (response.status === 200) {
+			return {} as UpdateShowResponseSuccess;
+		}
+
+		// Handle 400 Bad Request (genres not found or validation error)
+		if (response.status === 400) {
+			const data = await response.json();
+			const message = data.message || 'Validation failed';
+
+			// Parse missing genres from message
+			if (message.startsWith('Genres not found:')) {
+				const genresString = message.replace('Genres not found:', '').trim();
+				const missingGenres = genresString.split(',').map((g: string) => g.trim());
+				return { missingGenres } as UpdateShowResponseGenresNotFound;
+			}
+
+			// Other validation errors
+			return { message } as UpdateShowResponseFailure;
+		}
+
+		// Handle 404 Not Found
+		if (response.status === 404) {
+			return {} as UpdateShowResponseNotFound;
+		}
+
+		// Handle 403 Forbidden (not admin)
+		if (response.status === 403) {
+			return {
+				message: 'You do not have permission to edit shows'
+			} as UpdateShowResponseFailure;
+		}
+
+		// Handle 500 Internal Server Error
+		if (response.status === 500) {
+			const data = await response.json();
+			return { message: data.message || 'Server error' } as UpdateShowResponseFailure;
+		}
+
+		// Unexpected status code
+		return {
+			message: `Unexpected response: ${response.status}`
+		} as UpdateShowResponseFailure;
+	} catch (error) {
+		// Network error or other unexpected error
+		return {
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as UpdateShowResponseFailure;
 	}
 }

@@ -33,6 +33,10 @@
 		}
 	}
 
+	function handleEdit() {
+		goto(`/shows/${show.id}/edit`);
+	}
+
 	async function handleDelete() {
 		// Browser confirmation dialog
 		if (!confirm('Are you sure you want to delete this show? This action cannot be undone.')) {
@@ -106,7 +110,7 @@
 
 			{#if isAdmin}
 				<div class="admin-actions">
-					<button class="edit-button" disabled={isDeleting}>
+					<button class="edit-button" onclick={handleEdit} disabled={isDeleting}>
 						Edit Show
 					</button>
 					<button class="delete-button" onclick={handleDelete} disabled={isDeleting}>

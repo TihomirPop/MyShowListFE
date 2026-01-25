@@ -1,18 +1,25 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
-	import { createShowAPI } from '$lib/api/client';
+	import { updateShowAPI } from '$lib/api/client';
 	import ShowForm from '$lib/components/ShowForm.svelte';
-	import type { CreateShowFormErrors, CreateShowRequest } from '$lib/types/create-show';
+	import type {
+		UpdateShowFormErrors,
+		UpdateShowRequest
+	} from '$lib/types/update-show';
 	import {
-		isCreateShowSuccess,
-		isCreateShowGenresNotFound,
-		isCreateShowFailure
-	} from '$lib/types/create-show';
+		isUpdateShowSuccess,
+		isUpdateShowNotFound,
+		isUpdateShowGenresNotFound,
+		isUpdateShowFailure
+	} from '$lib/types/update-show';
 	import type { ShowFormData } from '$lib/components/ShowForm.svelte';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	let isLoading = $state(false);
-	let errors = $state<CreateShowFormErrors>({});
+	let errors = $state<UpdateShowFormErrors>({});
 
 	async function handleSubmit(formData: ShowFormData) {
 		errors = {};
@@ -26,9 +33,10 @@
 
 		try {
 			// Build polymorphic request based on showType
-			const request: CreateShowRequest =
+			const request: UpdateShowRequest =
 				formData.showType === 'MOVIE'
 					? {
+							id: data.show.id,
 							type: 'MOVIE',
 							title: formData.title.trim(),
 							description: formData.description.trim(),
@@ -36,6 +44,7 @@
 							releaseDate: formData.releaseDate
 						}
 					: {
+							id: data.show.id,
 							type: 'TV_SERIES',
 							title: formData.title.trim(),
 							description: formData.description.trim(),
@@ -45,26 +54,31 @@
 							endDate: formData.endDate
 						};
 
-			const response = await createShowAPI(request, authStore.token);
+			const response = await updateShowAPI(data.show.id, request, authStore.token);
 
 			// Pattern match response (DOP)
-			if (isCreateShowSuccess(response)) {
-				goto(`/shows/${response.showId}`);
+			if (isUpdateShowSuccess(response)) {
+				goto(`/shows/${data.show.id}`);
 				return;
 			}
 
-			if (isCreateShowGenresNotFound(response)) {
+			if (isUpdateShowNotFound(response)) {
+				errors = { general: 'Show not found. It may have been deleted.' };
+				return;
+			}
+
+			if (isUpdateShowGenresNotFound(response)) {
 				// TypeScript narrowing - explicit assertion after guard
-				const genresResponse = response as import('$lib/types/create-show').CreateShowResponseGenresNotFound;
+				const genresResponse = response as import('$lib/types/update-show').UpdateShowResponseGenresNotFound;
 				errors = {
 					genres: `The following genres do not exist: ${genresResponse.missingGenres.join(', ')}`
 				};
 				return;
 			}
 
-			if (isCreateShowFailure(response)) {
+			if (isUpdateShowFailure(response)) {
 				// TypeScript narrowing - explicit assertion after guard
-				const failureResponse = response as import('$lib/types/create-show').CreateShowResponseFailure;
+				const failureResponse = response as import('$lib/types/update-show').UpdateShowResponseFailure;
 				errors = { general: failureResponse.message };
 				return;
 			}
@@ -80,23 +94,26 @@
 	}
 
 	function handleCancel() {
-		goto('/');
+		goto(`/shows/${data.show.id}`);
 	}
 </script>
 
 <svelte:head>
-	<title>Add Show - MyShowList</title>
+	<title>Edit {data.show.title} - MyShowList</title>
 </svelte:head>
 
 <div class="container">
 	<nav class="breadcrumb">
 		<a href="/">Home</a>
 		<span class="separator">/</span>
-		<span class="current">Add Show</span>
+		<a href="/shows/{data.show.id}">{data.show.title}</a>
+		<span class="separator">/</span>
+		<span class="current">Edit</span>
 	</nav>
 
 	<ShowForm
-		mode="create"
+		mode="edit"
+		initialData={data.show}
 		{isLoading}
 		{errors}
 		onSubmit={handleSubmit}
