@@ -3,13 +3,24 @@
 	import { formatScore, getPlaceholderGradient } from '$lib/utils/show';
 	import Reviews from '$lib/components/Reviews.svelte';
 	import UserShow from '$lib/components/UserShow.svelte';
-	import { getShowByIdAPI } from '$lib/api/client';
+	import { getShowByIdAPI, deleteShowAPI } from '$lib/api/client';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { isSingleShowOk } from '$lib/types/show';
+	import {
+		isDeleteShowOk,
+		isDeleteShowFailure,
+		type DeleteShowResponseFailure
+	} from '$lib/types/delete-show';
+	import { goto } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
 
 	let show = $state(data.show);
+
+	// Admin functionality state
+	let isDeleting = $state(false);
+	let deleteError = $state<string | null>(null);
+	const isAdmin = $derived(authStore.user?.role === 'ADMIN');
 
 	// Function to refresh show data from API
 	async function refreshShow() {
@@ -19,6 +30,38 @@
 
 		if (isSingleShowOk(response)) {
 			show = response.show;
+		}
+	}
+
+	async function handleDelete() {
+		// Browser confirmation dialog
+		if (!confirm('Are you sure you want to delete this show? This action cannot be undone.')) {
+			return;
+		}
+
+		if (!authStore.token) {
+			deleteError = 'Authentication required';
+			return;
+		}
+
+		isDeleting = true;
+		deleteError = null;
+
+		const response = await deleteShowAPI(show.id, authStore.token);
+
+		if (isDeleteShowOk(response)) {
+			// Success - navigate to home page
+			goto('/');
+		} else if (isDeleteShowFailure(response)) {
+			// Failure - show error message
+			// TypeScript doesn't properly narrow after multiple guards, use explicit assertion
+			const failureResponse = response as DeleteShowResponseFailure;
+			deleteError = failureResponse.message;
+			isDeleting = false;
+		} else {
+			// NotFound case
+			deleteError = 'Show not found';
+			isDeleting = false;
 		}
 	}
 
@@ -60,6 +103,23 @@
 
 		<div class="show-main-info">
 			<h1 class="show-title">{show.title}</h1>
+
+			{#if isAdmin}
+				<div class="admin-actions">
+					<button class="edit-button" disabled={isDeleting}>
+						Edit Show
+					</button>
+					<button class="delete-button" onclick={handleDelete} disabled={isDeleting}>
+						{isDeleting ? 'Deleting...' : 'Delete Show'}
+					</button>
+				</div>
+
+				{#if deleteError}
+					<div class="delete-error">
+						{deleteError}
+					</div>
+				{/if}
+			{/if}
 
 			<div class="show-meta">
 				<div class="meta-item">
@@ -253,6 +313,64 @@
 		margin: 0;
 	}
 
+	.admin-actions {
+		display: flex;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	.edit-button,
+	.delete-button {
+		padding: 0.625rem 1.25rem;
+		border: none;
+		border-radius: 0.5rem;
+		font-size: 0.9rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.edit-button {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		color: white;
+		box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+	}
+
+	.edit-button:hover:not(:disabled) {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+	}
+
+	.delete-button {
+		background: #fff5f5;
+		color: #c53030;
+		border: 1px solid #fc8181;
+	}
+
+	.delete-button:hover:not(:disabled) {
+		background: #fed7d7;
+		border-color: #f56565;
+	}
+
+	.edit-button:disabled,
+	.delete-button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		transform: none;
+	}
+
+	.delete-error {
+		margin-bottom: 1rem;
+		padding: 0.75rem;
+		background: #fff5f5;
+		border: 1px solid #fc8181;
+		border-radius: 0.375rem;
+		color: #c53030;
+		font-size: 0.9rem;
+	}
+
 	@media (max-width: 768px) {
 		.show-header {
 			grid-template-columns: 1fr;
@@ -264,6 +382,15 @@
 
 		.show-title {
 			font-size: 2rem;
+		}
+
+		.admin-actions {
+			flex-direction: column;
+		}
+
+		.edit-button,
+		.delete-button {
+			width: 100%;
 		}
 	}
 </style>

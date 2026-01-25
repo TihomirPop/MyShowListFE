@@ -41,6 +41,12 @@ import type {
 	CreateShowResponseGenresNotFound,
 	CreateShowResponseFailure
 } from '$lib/types/create-show';
+import type {
+	DeleteShowResponse,
+	DeleteShowResponseOk,
+	DeleteShowResponseNotFound,
+	DeleteShowResponseFailure
+} from '$lib/types/delete-show';
 
 // Get base URL from environment variable, fallback to relative path for production
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -376,5 +382,31 @@ export async function createShowAPI(
 		return {
 			message: error instanceof Error ? error.message : 'An unexpected error occurred'
 		} as CreateShowResponseFailure;
+	}
+}
+
+/**
+ * Delete a show - Admin only
+ */
+export async function deleteShowAPI(
+	showId: string,
+	token: string
+): Promise<DeleteShowResponse> {
+	try {
+		// Backend returns 204 No Content on success
+		await authenticatedRequest<void>(`/shows/${showId}`, token, {
+			method: 'DELETE'
+		});
+		return {} as DeleteShowResponseOk;
+	} catch (error) {
+		if (error instanceof ApiError) {
+			if (error.status === 404) {
+				return {} as DeleteShowResponseNotFound;
+			}
+			return { message: error.message } as DeleteShowResponseFailure;
+		}
+		return {
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as DeleteShowResponseFailure;
 	}
 }
