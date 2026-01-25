@@ -63,6 +63,9 @@
 		<div class="nav-container">
 			<a href="/" class="nav-brand">MyShowList</a>
 			<div class="nav-items">
+				{#if authStore.user?.role === 'ADMIN'}
+					<a href="/shows/new" class="add-show-btn">Add Show</a>
+				{/if}
 				<a href="/mylist" class="username-link">{authStore.user?.username}</a>
 				<button onclick={() => authStore.logout()} class="logout-btn">
 					Logout
@@ -126,6 +129,30 @@
 		text-decoration: underline;
 	}
 
+	.add-show-btn {
+		background: rgba(255, 255, 255, 0.25);
+		color: white;
+		padding: 0.5rem 1.25rem;
+		border-radius: 0.375rem;
+		font-size: 0.95rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition:
+			background 0.2s,
+			transform 0.1s;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		display: inline-block;
+	}
+
+	.add-show-btn:hover {
+		background: rgba(255, 255, 255, 0.35);
+		transform: translateY(-1px);
+	}
+
+	.add-show-btn:active {
+		transform: translateY(0);
+	}
+
 	.logout-btn {
 		background: rgba(255, 255, 255, 0.2);
 		color: white;
@@ -160,6 +187,11 @@
 
 		.username-link {
 			display: none;
+		}
+
+		.add-show-btn {
+			padding: 0.5rem 1rem;
+			font-size: 0.875rem;
 		}
 
 		.logout-btn {
