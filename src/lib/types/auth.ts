@@ -16,6 +16,7 @@ export interface RegisterResponse {
 
 export interface User {
 	username: string;
+	role: string; // "USER" or "ADMIN"
 }
 
 export interface LoginFormErrors {

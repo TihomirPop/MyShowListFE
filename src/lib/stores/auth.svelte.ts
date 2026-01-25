@@ -4,8 +4,8 @@ import { goto } from '$app/navigation';
 
 const TOKEN_KEY = 'auth_token';
 
-// Decode JWT to extract username and check expiration
-function decodeJWT(token: string): { username: string } | null {
+// Decode JWT to extract username, role and check expiration
+function decodeJWT(token: string): { username: string; role: string } | null {
 	try {
 		const parts = token.split('.');
 		if (parts.length !== 3) return null;
@@ -17,7 +17,12 @@ function decodeJWT(token: string): { username: string } | null {
 			return null;
 		}
 
-		return { username: payload.sub };
+		// Extract both username and role
+		if (!payload.sub || !payload.role) {
+			return null;
+		}
+
+		return { username: payload.sub, role: payload.role };
 	} catch {
 		return null;
 	}
@@ -51,7 +56,7 @@ class AuthStore {
 				return { success: false, error: 'Invalid token received' };
 			}
 
-			this.user = { username: decoded.username };
+			this.user = { username: decoded.username, role: decoded.role };
 			return { success: true };
 
 		} catch (error) {
@@ -77,7 +82,7 @@ class AuthStore {
 			const decoded = decodeJWT(storedToken);
 			if (decoded) {
 				this.token = storedToken;
-				this.user = { username: decoded.username };
+				this.user = { username: decoded.username, role: decoded.role };
 			} else {
 				// Token invalid or expired
 				localStorage.removeItem(TOKEN_KEY);

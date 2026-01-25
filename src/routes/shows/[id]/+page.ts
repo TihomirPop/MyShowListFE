@@ -5,7 +5,7 @@ import {
 	isSingleShowOk,
 	isSingleShowNotFound,
 	isSingleShowFailure,
-	type SingleShowResponseFailure
+	type SingleShowResponseOk
 } from '$lib/types/show';
 import { isGetUserShowsOk, type UserShowDto } from '$lib/types/user-show';
 import type { PageLoad } from './$types';
@@ -27,11 +27,18 @@ export const load: PageLoad = async ({ params }) => {
 	// Pattern match show response
 	if (isSingleShowNotFound(showResponse)) {
 		throw error(404, 'Show not found');
-	} else if (!isSingleShowOk(showResponse)) {
-		// Handle failure case - type assertion needed due to TypeScript narrowing limitations
-		const failureResponse = showResponse as SingleShowResponseFailure;
-		throw error(500, failureResponse.message || 'Failed to load show');
 	}
+
+	if (isSingleShowFailure(showResponse)) {
+		throw error(500, (showResponse as { message: string }).message || 'Failed to load show');
+	}
+
+	if (!isSingleShowOk(showResponse)) {
+		throw error(500, 'Failed to load show');
+	}
+
+	// TypeScript narrowing limitation - explicitly assert the type after guards
+	const show = (showResponse as SingleShowResponseOk).show;
 
 	// Extract user show for this specific show (may be null)
 	let userShow: UserShowDto | null = null;
@@ -41,7 +48,7 @@ export const load: PageLoad = async ({ params }) => {
 	}
 
 	return {
-		show: showResponse.show,
+		show,
 		userShow // null if show not in user's list
 	};
 };
