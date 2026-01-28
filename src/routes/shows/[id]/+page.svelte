@@ -86,8 +86,20 @@
 			});
 		}
 		// TV series date range
-		const start = show.startDate ? new Date(show.startDate).getFullYear() : 'Unknown';
-		const end = show.endDate ? new Date(show.endDate).getFullYear() : 'Ongoing';
+		const start = show.startDate
+			? new Date(show.startDate).toLocaleDateString('en-US', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			})
+			: 'Unknown';
+		const end = show.endDate
+			? new Date(show.endDate).toLocaleDateString('en-US', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			})
+			: 'Ongoing';
 		return `${start} - ${end}`;
 	});
 </script>
