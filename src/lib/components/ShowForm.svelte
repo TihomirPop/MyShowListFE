@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ShowDto } from '$lib/types/show';
 	import type { ShowType } from '$lib/types/create-show';
+	import { getPlaceholderGradient } from '$lib/utils/show';
 
 	// Available genres
 	const AVAILABLE_GENRES = [
@@ -88,6 +89,22 @@
 			? initialData.endDate.split('T')[0]
 			: ''
 	);
+
+	// Thumbnail preview state
+	let previewImageError = $state(false);
+	let lastThumbnailUrl = $state('');
+
+	function handlePreviewImageError() {
+		previewImageError = true;
+	}
+
+	// Track URL changes and reset error state
+	$effect(() => {
+		if (thumbnailUrl !== lastThumbnailUrl) {
+			lastThumbnailUrl = thumbnailUrl;
+			previewImageError = false;
+		}
+	});
 
 	// Derived state (computed validation)
 	const canSubmit = $derived(
@@ -222,6 +239,28 @@
 			<span class="field-hint">
 				Recommended: 2:3 aspect ratio image (e.g., 400×600px). Must be HTTP/HTTPS URL.
 			</span>
+
+			<!-- Thumbnail Preview -->
+			{#if thumbnailUrl.trim().length > 0 && (thumbnailUrl.startsWith('http://') || thumbnailUrl.startsWith('https://'))}
+				<div class="thumbnail-preview-container">
+					<span class="preview-label">Preview:</span>
+					<div class="thumbnail-preview">
+						{#if !previewImageError && thumbnailUrl.trim()}
+							<img
+								src={thumbnailUrl.trim()}
+								alt="Thumbnail preview"
+								class="preview-image"
+								onerror={handlePreviewImageError}
+							/>
+						{:else}
+							<div
+								class="preview-placeholder"
+								style="background: {getPlaceholderGradient(0)};"
+							></div>
+						{/if}
+					</div>
+				</div>
+			{/if}
 		</div>
 
 		<!-- Genres (Checkbox Group) -->
@@ -536,6 +575,43 @@
 		cursor: not-allowed;
 	}
 
+	.thumbnail-preview-container {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+	}
+
+	.preview-label {
+		font-weight: 600;
+		color: #4a5568;
+		font-size: 0.875rem;
+	}
+
+	.thumbnail-preview {
+		width: 200px;
+		height: 300px;
+		border-radius: 0.75rem;
+		overflow: hidden;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		border: 2px solid #e2e8f0;
+	}
+
+	.preview-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.preview-placeholder {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
 	@media (max-width: 768px) {
 		.form-card {
 			padding: 2rem 1.5rem;
@@ -551,6 +627,11 @@
 
 		h1 {
 			font-size: 1.75rem;
+		}
+
+		.thumbnail-preview {
+			width: 150px;
+			height: 225px; /* maintains 2:3 ratio */
 		}
 	}
 </style>
