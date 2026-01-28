@@ -10,8 +10,15 @@
 	let userShows = $state<UserShowDto[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
+	let imageErrors = $state<Map<string, boolean>>(new Map());
 
 	const showCount = $derived(userShows.length);
+
+	function handleImageError(showId: string) {
+		const newErrors = new Map(imageErrors);
+		newErrors.set(showId, true);
+		imageErrors = newErrors;
+	}
 
 	onMount(async () => {
 		await loadUserShows();
@@ -85,7 +92,20 @@
 				{#each userShows as userShow, index (userShow.show.id)}
 					<a href="/shows/{userShow.show.id}" class="show-card-link">
 						<article class="user-show-card">
-							<div class="show-thumbnail" style="background: {getPlaceholderGradient(index)};">
+							<div class="show-thumbnail">
+								{#if !imageErrors.get(userShow.show.id) && userShow.show.thumbnailUrl}
+									<img
+										src={userShow.show.thumbnailUrl}
+										alt="{userShow.show.title} poster"
+										class="thumbnail-image"
+										onerror={() => handleImageError(userShow.show.id)}
+									/>
+								{:else}
+									<div
+										class="thumbnail-placeholder"
+										style="background: {getPlaceholderGradient(index)};"
+									></div>
+								{/if}
 								<span class="show-type-badge">{userShow.show.type === 'MOVIE' ? 'Movie' : 'TV'}</span>
 								<span
 									class="status-badge"
@@ -290,6 +310,19 @@
 		width: 100%;
 		height: 200px;
 		position: relative;
+		overflow: hidden;
+	}
+
+	.thumbnail-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.thumbnail-placeholder {
+		width: 100%;
+		height: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -307,6 +340,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.025em;
+		z-index: 1;
 	}
 
 	.status-badge {
@@ -319,6 +353,7 @@
 		font-weight: 600;
 		text-transform: capitalize;
 		letter-spacing: 0.025em;
+		z-index: 1;
 	}
 
 	.show-info {

@@ -22,6 +22,13 @@
 	let deleteError = $state<string | null>(null);
 	const isAdmin = $derived(authStore.user?.role === 'ADMIN');
 
+	// Image loading state
+	let imageLoadError = $state(false);
+
+	function handleImageError() {
+		imageLoadError = true;
+	}
+
 	// Function to refresh show data from API
 	async function refreshShow() {
 		if (!authStore.token) return;
@@ -99,7 +106,20 @@
 
 	<!-- Show header with thumbnail and main info -->
 	<div class="show-header">
-		<div class="show-thumbnail" style="background: {getPlaceholderGradient(0)};">
+		<div class="show-thumbnail-container">
+			{#if !imageLoadError && show.thumbnailUrl}
+				<img
+					src={show.thumbnailUrl}
+					alt="{show.title} poster"
+					class="show-thumbnail-image"
+					onerror={handleImageError}
+				/>
+			{:else}
+				<div
+					class="show-thumbnail-placeholder"
+					style="background: {getPlaceholderGradient(0)};"
+				></div>
+			{/if}
 			<span class="show-type-badge">
 				{show.type === 'MOVIE' ? 'Movie' : 'TV Series'}
 			</span>
@@ -214,17 +234,34 @@
 		margin-bottom: 3rem;
 	}
 
-	.show-thumbnail {
-		width: 100%;
+	.show-thumbnail-container {
+		width: 300px;
 		height: 450px;
+		position: relative;
 		border-radius: 0.75rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		overflow: hidden;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 	}
 
+	.show-thumbnail-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.show-thumbnail-placeholder {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
 	.show-type-badge {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
 		background: rgba(255, 255, 255, 0.9);
 		color: #2d3748;
 		padding: 0.5rem 1rem;
@@ -233,6 +270,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
+		z-index: 1;
 	}
 
 	.show-title {
@@ -380,7 +418,8 @@
 			grid-template-columns: 1fr;
 		}
 
-		.show-thumbnail {
+		.show-thumbnail-container {
+			width: 100%;
 			height: 300px;
 		}
 

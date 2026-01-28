@@ -5,6 +5,7 @@ interface ShowBase {
 	description: string;
 	genres: string[];
 	averageScore: number | null;
+	thumbnailUrl: string;
 }
 
 // Movie-specific type with discriminator

@@ -32,6 +32,7 @@
 							type: 'MOVIE',
 							title: formData.title.trim(),
 							description: formData.description.trim(),
+							thumbnailUrl: formData.thumbnailUrl.trim(),
 							genres: Array.from(formData.selectedGenres),
 							releaseDate: formData.releaseDate
 						}
@@ -39,6 +40,7 @@
 							type: 'TV_SERIES',
 							title: formData.title.trim(),
 							description: formData.description.trim(),
+							thumbnailUrl: formData.thumbnailUrl.trim(),
 							genres: Array.from(formData.selectedGenres),
 							episodeCount: Number(formData.episodeCount),
 							startDate: formData.startDate,

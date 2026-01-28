@@ -27,6 +27,7 @@
 		showType: ShowType;
 		title: string;
 		description: string;
+		thumbnailUrl: string;
 		selectedGenres: Set<string>;
 		releaseDate: string;
 		episodeCount: number | '';
@@ -38,6 +39,7 @@
 	export interface ShowFormErrors {
 		title?: string;
 		description?: string;
+		thumbnailUrl?: string;
 		genres?: string;
 		releaseDate?: string;
 		episodeCount?: string;
@@ -62,6 +64,7 @@
 	let showType = $state<ShowType>(initialData?.type || 'MOVIE');
 	let title = $state(initialData?.title || '');
 	let description = $state(initialData?.description || '');
+	let thumbnailUrl = $state(initialData?.thumbnailUrl || '');
 	let selectedGenres = $state<Set<string>>(new Set(initialData?.genres || []));
 
 	// Movie-specific fields
@@ -90,6 +93,7 @@
 	const canSubmit = $derived(
 		title.trim().length > 0 &&
 			description.trim().length > 0 &&
+			thumbnailUrl.trim().length > 0 &&
 			selectedGenres.size > 0 &&
 			(showType === 'MOVIE'
 				? releaseDate.length > 0
@@ -104,6 +108,7 @@
 			showType,
 			title,
 			description,
+			thumbnailUrl,
 			selectedGenres,
 			releaseDate,
 			episodeCount,
@@ -193,6 +198,30 @@
 					{errors.description}
 				</span>
 			{/if}
+		</div>
+
+		<!-- Thumbnail URL -->
+		<div class="form-group">
+			<label for="thumbnail-url">Thumbnail URL *</label>
+			<input
+				id="thumbnail-url"
+				type="url"
+				bind:value={thumbnailUrl}
+				placeholder="https://example.com/image.jpg"
+				disabled={isLoading}
+				aria-invalid={!!errors.thumbnailUrl}
+				aria-describedby={errors.thumbnailUrl ? 'thumbnail-url-error' : undefined}
+				maxlength="2048"
+				pattern="https?://.+"
+			/>
+			{#if errors.thumbnailUrl}
+				<span id="thumbnail-url-error" class="error-message" role="alert">
+					{errors.thumbnailUrl}
+				</span>
+			{/if}
+			<span class="field-hint">
+				Recommended: 2:3 aspect ratio image (e.g., 400×600px). Must be HTTP/HTTPS URL.
+			</span>
 		</div>
 
 		<!-- Genres (Checkbox Group) -->
@@ -394,6 +423,12 @@
 
 	.error-message {
 		color: #c53030;
+		font-size: 0.85rem;
+		margin-top: -0.25rem;
+	}
+
+	.field-hint {
+		color: #718096;
 		font-size: 0.85rem;
 		margin-top: -0.25rem;
 	}

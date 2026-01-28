@@ -8,6 +8,13 @@
 	let shows = $state<ShowDto[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
+	let imageErrors = $state<Map<string, boolean>>(new Map());
+
+	function handleImageError(showId: string) {
+		const newErrors = new Map(imageErrors);
+		newErrors.set(showId, true);
+		imageErrors = newErrors;
+	}
 
 	onMount(async () => {
 		await loadShows();
@@ -81,7 +88,20 @@
 				{#each shows as show, index (show.id)}
 					<a href="/shows/{show.id}" class="show-card-link">
 						<article class="show-card">
-							<div class="show-thumbnail" style="background: {getPlaceholderGradient(index)};">
+							<div class="show-thumbnail">
+								{#if !imageErrors.get(show.id) && show.thumbnailUrl}
+									<img
+										src={show.thumbnailUrl}
+										alt="{show.title} poster"
+										class="thumbnail-image"
+										onerror={() => handleImageError(show.id)}
+									/>
+								{:else}
+									<div
+										class="thumbnail-placeholder"
+										style="background: {getPlaceholderGradient(index)};"
+									></div>
+								{/if}
 								<span class="show-type-badge">{show.type === 'MOVIE' ? 'Movie' : 'TV'}</span>
 							</div>
 							<div class="show-info">
@@ -348,12 +368,28 @@
 		width: 100%;
 		height: 200px;
 		position: relative;
+		overflow: hidden;
+	}
+
+	.thumbnail-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.thumbnail-placeholder {
+		width: 100%;
+		height: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
 
 	.show-type-badge {
+		position: absolute;
+		top: 0.75rem;
+		left: 0.75rem;
 		background: rgba(255, 255, 255, 0.9);
 		color: #2d3748;
 		padding: 0.375rem 0.75rem;
@@ -362,6 +398,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.025em;
+		z-index: 1;
 	}
 
 	.show-info {

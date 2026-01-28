@@ -4,6 +4,7 @@ interface UpdateShowRequestBase {
 	id: string;
 	title: string;
 	description: string;
+	thumbnailUrl: string;
 	genres: string[];
 }
 
