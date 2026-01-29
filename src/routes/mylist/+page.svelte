@@ -396,9 +396,5 @@
 		.shows-grid {
 			grid-template-columns: 1fr;
 		}
-
-		.show-thumbnail {
-			height: 180px;
-		}
 	}
 </style>

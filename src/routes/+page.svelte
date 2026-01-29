@@ -358,10 +358,6 @@
 			grid-template-columns: 1fr;
 		}
 
-		.show-thumbnail {
-			height: 180px;
-		}
-
 		.features {
 			grid-template-columns: 1fr;
 		}
