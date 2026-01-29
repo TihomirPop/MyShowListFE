@@ -238,8 +238,7 @@
 					aria-describedby="search-help"
 					aria-autocomplete="list"
 					aria-controls="search-results"
-					disabled={searchLoading}
-				/>
+					/>
 
 				{#if searchLoading}
 					<span class="search-spinner" aria-label="Searching..."></span>
