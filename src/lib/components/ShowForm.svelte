@@ -1,27 +1,7 @@
 <script lang="ts">
-	import type { ShowDto } from '$lib/types/show';
+	import { ALLOWED_GENRES, type ShowDto } from '$lib/types/show';
 	import type { ShowType } from '$lib/types/create-show';
 	import { getPlaceholderGradient } from '$lib/utils/show';
-
-	// Available genres
-	const AVAILABLE_GENRES = [
-		'Action',
-		'Adventure',
-		'Avant Garde',
-		'Award Winning',
-		'Comedy',
-		'Drama',
-		'Fantasy',
-		'Gourmet',
-		'Horror',
-		'Mystery',
-		'Romance',
-		'Sci-Fi',
-		'Slice of Life',
-		'Sports',
-		'Supernatural',
-		'Suspense'
-	];
 
 	// Form data structure that will be passed to onSubmit
 	export interface ShowFormData {
@@ -52,7 +32,7 @@
 	// Component props
 	interface Props {
 		mode: 'create' | 'edit';
-		initialData?: ShowDto;
+		initialData: ShowDto | null;
 		isLoading: boolean;
 		errors: ShowFormErrors;
 		onSubmit: (formData: ShowFormData) => void;
@@ -114,7 +94,7 @@
 			selectedGenres.size > 0 &&
 			(showType === 'MOVIE'
 				? releaseDate.length > 0
-				: episodeCount !== '' && startDate.length > 0 && endDate.length > 0)
+				: episodeCount !== '' && startDate.length > 0)
 	);
 
 	function handleSubmit(event: Event) {
@@ -267,7 +247,7 @@
 		<div class="form-group">
 			<label id="genres-label">Genres * (select at least one)</label>
 			<div class="genres-grid" role="group" aria-labelledby="genres-label">
-				{#each AVAILABLE_GENRES as genre (genre)}
+				{#each ALLOWED_GENRES as genre (genre)}
 					<label class="genre-checkbox">
 						<input
 							type="checkbox"
@@ -346,7 +326,7 @@
 				</div>
 
 				<div class="form-group">
-					<label for="end-date">End Date *</label>
+					<label for="end-date">End Date</label>
 					<input
 						id="end-date"
 						type="date"

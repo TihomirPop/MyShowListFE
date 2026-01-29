@@ -25,6 +25,25 @@ export interface TvSeriesDto extends ShowBase {
 // Union type for polymorphic ShowDto (discriminated union)
 export type ShowDto = MovieDto | TvSeriesDto;
 
+export const ALLOWED_GENRES = [
+	'Action',
+	'Adventure',
+	'Avant Garde',
+	'Award Winning',
+	'Comedy',
+	'Drama',
+	'Fantasy',
+	'Gourmet',
+	'Horror',
+	'Mystery',
+	'Romance',
+	'Sci-Fi',
+	'Slice of Life',
+	'Sports',
+	'Supernatural',
+	'Suspense'
+];
+
 // API response types matching backend sealed interface pattern
 export interface ShowResponseOk {
 	shows: ShowDto[];

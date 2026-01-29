@@ -55,6 +55,11 @@ import type {
 	UpdateShowResponseGenresNotFound,
 	UpdateShowResponseFailure
 } from '$lib/types/update-show';
+import type {
+	ExternalSearchResponse,
+	ExternalSearchResponseOk,
+	ExternalSearchResponseFailure
+} from '$lib/types/external-search';
 
 // Get base URL from environment variable, fallback to relative path for production
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -485,5 +490,35 @@ export async function updateShowAPI(
 		return {
 			message: error instanceof Error ? error.message : 'An unexpected error occurred'
 		} as UpdateShowResponseFailure;
+	}
+}
+
+/**
+ * Search for shows from external source (authenticated)
+ */
+export async function externalSearchAPI(
+	query: string,
+	token: string
+): Promise<ExternalSearchResponse> {
+	try {
+		// Encode query parameter to handle special characters
+		const encodedQuery = encodeURIComponent(query);
+		const response = await authenticatedRequest<ExternalSearchResponseOk>(
+			`/external-search?query=${encodedQuery}`,
+			token,
+			{ method: 'GET' }
+		);
+		return response;
+	} catch (error) {
+		if (error instanceof ApiError) {
+			return {
+				type: 'Failure',
+				message: error.message
+			} as ExternalSearchResponseFailure;
+		}
+		return {
+			type: 'Failure',
+			message: error instanceof Error ? error.message : 'An unexpected error occurred'
+		} as ExternalSearchResponseFailure;
 	}
 }

@@ -16,7 +16,7 @@ export interface CreateTvSeriesRequest extends CreateShowRequestBase {
 	type: 'TV_SERIES';
 	episodeCount: number;
 	startDate: string; // ISO 8601 date string (YYYY-MM-DD)
-	endDate: string; // ISO 8601 date string (YYYY-MM-DD)
+	endDate: string | null; // ISO 8601 date string (YYYY-MM-DD) or null if not set
 }
 
 export type CreateShowRequest = CreateMovieRequest | CreateTvSeriesRequest;
