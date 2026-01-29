@@ -1,0 +1,218 @@
+/* Global CSS with Custom Properties (Design Tokens) */
+
+:root {
+  /* Colors - Brand */
+  --color-primary: #667eea;
+  --color-primary-dark: #5568d3;
+  --color-secondary: #764ba2;
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  /* Colors - Neutral */
+  --color-dark: #1a202c;
+  --color-dark-medium: #2d3748;
+  --color-dark-light: #4a5568;
+  --color-gray: #718096;
+  --color-gray-light: #a0aec0;
+  --color-bg-light: #f7fafc;
+  --color-border: #cbd5e0;
+  --color-border-light: #e2e8f0;
+  --color-white: #ffffff;
+
+  /* Colors - Semantic */
+  --color-error: #c53030;
+  --color-error-light: #fed7d7;
+  --color-error-bg: #fff5f5;
+  --color-error-border: #fc8181;
+  --color-success: #48bb78;
+  --color-success-light: #c6f6d5;
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Transitions */
+  --transition-fast: 0.1s ease-in-out;
+  --transition-base: 0.2s ease-in-out;
+  --transition-slow: 0.4s ease-in-out;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --shadow-focus: 0 0 0 3px rgba(102, 126, 234, 0.1);
+
+  /* Typography */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-size-sm: 0.85rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+}
+
+/* Base Reset and Typography */
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  color: var(--color-dark);
+  line-height: 1.6;
+}
+
+/* Shared Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Form Inputs - Shared Base Styles */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  transition: all var(--transition-base);
+  background: var(--color-white);
+}
+
+input:focus:not([type="checkbox"]):not([type="radio"]),
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+input:disabled:not([type="checkbox"]):not([type="radio"]),
+textarea:disabled,
+select:disabled {
+  background: var(--color-bg-light);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: var(--color-error-border);
+}
+
+/* Button Base Styles */
+button {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-6);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Primary Button Variant */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Secondary Button Variant */
+.btn-secondary {
+  background: transparent;
+  color: var(--color-gray);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-bg-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Danger Button Variant */
+.btn-danger {
+  background: var(--color-error);
+  color: var(--color-white);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #a82828;
+}
+
+/* Error Banner */
+.error-banner {
+  background: var(--color-error-light);
+  color: var(--color-error);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--color-error-border);
+  margin-bottom: var(--space-4);
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-10);
+  color: var(--color-gray);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--space-10);
+  color: var(--color-gray);
+}
+
+/* Card */
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-8);
+}

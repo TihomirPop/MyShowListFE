@@ -119,14 +119,14 @@
 	<h2>Reviews</h2>
 
 	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
+		<div class="loading-container">
+			<div class="loading-spinner"></div>
 			<p>Loading reviews...</p>
 		</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-message">{error}</p>
-			<button onclick={loadReviews} class="retry-button">Try Again</button>
+			<button onclick={loadReviews} class="btn-primary retry-button">Try Again</button>
 		</div>
 	{:else}
 		<!-- Review form (add or edit) -->
@@ -154,12 +154,12 @@
 
 					<div class="form-actions">
 						{#if isEditing}
-							<button onclick={handleCancelEdit} disabled={isSubmitting} class="cancel-button">
+							<button onclick={handleCancelEdit} disabled={isSubmitting} class="btn-secondary">
 								Cancel
 							</button>
 						{/if}
 
-						<button onclick={handleSubmit} disabled={!canSubmit || isSubmitting} class="submit-button">
+						<button onclick={handleSubmit} disabled={!canSubmit || isSubmitting} class="btn-primary">
 							{isSubmitting ? 'Submitting...' : isEditing ? 'Update Review' : 'Submit Review'}
 						</button>
 					</div>
@@ -207,114 +207,68 @@
 
 <style>
 	.reviews-section {
-		margin-top: 3rem;
-		padding-top: 2rem;
-		border-top: 2px solid #e2e8f0;
+		margin-top: var(--space-12);
+		padding-top: var(--space-8);
+		border-top: 2px solid var(--color-border-light);
 	}
 
 	.reviews-section h2 {
-		margin: 0 0 1.5rem 0;
+		margin: 0 0 var(--space-6) 0;
 		font-size: 1.75rem;
-		color: #1a202c;
+		color: var(--color-dark);
 	}
 
 	.reviews-section h3 {
-		margin: 0 0 1rem 0;
-		font-size: 1.25rem;
-		color: #2d3748;
-	}
-
-	/* Loading/Error states (reuse from home page) */
-	.loading-state {
-		text-align: center;
-		padding: 3rem;
-		color: #718096;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		margin: 0 auto 1rem;
-		border: 3px solid #e2e8f0;
-		border-top-color: #667eea;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
+		margin: 0 0 var(--space-4) 0;
+		font-size: var(--font-size-xl);
+		color: var(--color-dark-medium);
 	}
 
 	.error-state {
 		text-align: center;
-		padding: 2rem;
-		background: #fff5f5;
-		border-radius: 0.75rem;
-		border: 1px solid #fc8181;
+		padding: var(--space-8);
+		background: var(--color-error-bg);
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--color-error-border);
 	}
 
 	.error-message {
-		color: #c53030;
-		margin: 0 0 1rem 0;
-	}
-
-	.retry-button {
-		background: #667eea;
-		color: white;
-		padding: 0.75rem 1.5rem;
-		border: none;
-		border-radius: 0.5rem;
-		cursor: pointer;
-		font-size: 0.95rem;
-		transition: background 0.2s;
-	}
-
-	.retry-button:hover {
-		background: #5568d3;
-	}
-
-	.empty-state {
-		text-align: center;
-		padding: 3rem;
-		background: #f7fafc;
-		border-radius: 0.75rem;
-		border: 2px dashed #cbd5e0;
+		color: var(--color-error);
+		margin: 0 0 var(--space-4) 0;
 	}
 
 	.empty-state p {
-		margin: 0.5rem 0;
-		color: #718096;
+		margin: var(--space-2) 0;
+		color: var(--color-gray);
 	}
 
 	.empty-state .hint {
 		font-size: 0.9rem;
-		color: #a0aec0;
+		color: var(--color-gray-light);
 	}
 
 	/* Review form */
 	.review-form {
-		background: #f7fafc;
-		padding: 1.5rem;
-		border-radius: 0.75rem;
-		margin-bottom: 2rem;
+		background: var(--color-bg-light);
+		padding: var(--space-6);
+		border-radius: var(--radius-lg);
+		margin-bottom: var(--space-8);
 	}
 
 	.review-textarea {
 		width: 100%;
-		padding: 0.75rem;
-		border: 1px solid #cbd5e0;
-		border-radius: 0.5rem;
+		padding: var(--space-3);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
 		font-family: inherit;
-		font-size: 1rem;
+		font-size: var(--font-size-base);
 		resize: vertical;
-		transition: border-color 0.2s;
+		transition: border-color var(--transition-base);
 	}
 
 	.review-textarea:focus {
 		outline: none;
-		border-color: #667eea;
+		border-color: var(--color-primary);
 	}
 
 	.review-textarea:disabled {
@@ -323,12 +277,12 @@
 	}
 
 	.form-footer {
-		margin-top: 0.75rem;
+		margin-top: var(--space-3);
 	}
 
 	.char-count {
-		font-size: 0.875rem;
-		color: #718096;
+		font-size: var(--font-size-sm);
+		color: var(--color-gray);
 	}
 
 	.char-count.warning {
@@ -337,81 +291,45 @@
 	}
 
 	.submit-error {
-		color: #c53030;
-		font-size: 0.875rem;
-		margin: 0.5rem 0;
+		color: var(--color-error);
+		font-size: var(--font-size-sm);
+		margin: var(--space-2) 0;
 	}
 
 	.form-actions {
 		display: flex;
-		gap: 0.75rem;
+		gap: var(--space-3);
 		justify-content: flex-end;
-		margin-top: 0.75rem;
-	}
-
-	.cancel-button,
-	.submit-button {
-		padding: 0.75rem 1.5rem;
-		border-radius: 0.5rem;
-		font-weight: 600;
-		font-size: 0.95rem;
-		cursor: pointer;
-		transition: all 0.2s;
-		border: none;
-	}
-
-	.cancel-button {
-		background: white;
-		color: #4a5568;
-		border: 1px solid #cbd5e0;
-	}
-
-	.cancel-button:hover:not(:disabled) {
-		background: #f7fafc;
-	}
-
-	.submit-button {
-		background: #667eea;
-		color: white;
-	}
-
-	.submit-button:hover:not(:disabled) {
-		background: #5568d3;
-	}
-
-	.submit-button:disabled,
-	.cancel-button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
+		margin-top: var(--space-3);
 	}
 
 	/* Review cards */
 	.review-card {
-		background: white;
-		padding: 1.5rem;
-		border-radius: 0.75rem;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		margin-bottom: 1rem;
+		background: var(--color-white);
+		padding: var(--space-6);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-sm);
+		margin-bottom: var(--space-4);
 	}
 
 	.review-card.user-review {
-		border: 2px solid #667eea;
+		border: 2px solid var(--color-primary);
 	}
 
 	.review-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 0.75rem;
+		margin-bottom: var(--space-3);
 	}
 
 	.review-username {
 		font-weight: 600;
-		color: #2d3748;
+		color: var(--color-dark-medium);
 	}
 
 	.review-text {
-		color: #4a5568;
+		color: var(--color-dark-light);
 		line-height: 1.6;
 		margin: 0;
 		white-space: pre-wrap;
@@ -420,59 +338,54 @@
 
 	.review-actions {
 		display: flex;
-		gap: 0.75rem;
-		margin-top: 1rem;
+		gap: var(--space-3);
+		margin-top: var(--space-4);
 	}
 
 	.action-button {
-		padding: 0.5rem 1rem;
-		border-radius: 0.5rem;
-		font-size: 0.875rem;
+		padding: var(--space-2) var(--space-4);
+		border-radius: var(--radius-md);
+		font-size: var(--font-size-sm);
 		font-weight: 600;
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: all var(--transition-base);
 		border: none;
 	}
 
 	.edit-button {
 		background: #edf2f7;
-		color: #2d3748;
+		color: var(--color-dark-medium);
 	}
 
 	.edit-button:hover {
-		background: #e2e8f0;
+		background: var(--color-border-light);
 	}
 
 	.delete-button {
-		background: #fff5f5;
-		color: #c53030;
+		background: var(--color-error-bg);
+		color: var(--color-error);
 	}
 
 	.delete-button:hover {
-		background: #fed7d7;
+		background: var(--color-error-light);
 	}
 
 	.reviews-list {
-		margin-top: 2rem;
+		margin-top: var(--space-8);
 	}
 
 	@media (max-width: 768px) {
 		.reviews-section {
-			margin-top: 2rem;
-			padding-top: 1.5rem;
+			margin-top: var(--space-8);
+			padding-top: var(--space-6);
 		}
 
 		.review-form {
-			padding: 1rem;
+			padding: var(--space-4);
 		}
 
 		.form-actions {
 			flex-direction: column;
-		}
-
-		.cancel-button,
-		.submit-button {
-			width: 100%;
 		}
 	}
 </style>

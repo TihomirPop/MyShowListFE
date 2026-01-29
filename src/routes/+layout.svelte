@@ -1,4 +1,5 @@
 <script lang="ts">
+	import "../app.css";
 	import favicon from "$lib/assets/favicon.svg";
 	import { authStore } from "$lib/stores/auth.svelte";
 	import { beforeNavigate } from "$app/navigation";
@@ -78,32 +79,26 @@
 {@render children()}
 
 <style>
-	:global(body) {
-		margin: 0;
-		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-			"Helvetica Neue", Arial, sans-serif;
-	}
-
 	.navbar {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		background: var(--gradient-primary);
+		box-shadow: var(--shadow-sm);
 	}
 
 	.nav-container {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 1rem 1.5rem;
+		padding: var(--space-4) var(--space-6);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 	}
 
 	.nav-brand {
-		color: white;
-		font-size: 1.5rem;
+		color: var(--color-white);
+		font-size: var(--font-size-2xl);
 		font-weight: 700;
 		text-decoration: none;
-		transition: opacity 0.2s;
+		transition: opacity var(--transition-base);
 	}
 
 	.nav-brand:hover {
@@ -113,14 +108,14 @@
 	.nav-items {
 		display: flex;
 		align-items: center;
-		gap: 1.5rem;
+		gap: var(--space-6);
 	}
 
 	.username-link {
-		color: white;
+		color: var(--color-white);
 		font-weight: 500;
 		text-decoration: none;
-		transition: opacity 0.2s;
+		transition: opacity var(--transition-base);
 		cursor: pointer;
 	}
 
@@ -131,15 +126,13 @@
 
 	.add-show-btn {
 		background: rgba(255, 255, 255, 0.25);
-		color: white;
-		padding: 0.5rem 1.25rem;
-		border-radius: 0.375rem;
+		color: var(--color-white);
+		padding: var(--space-2) var(--space-5);
+		border-radius: var(--radius-sm);
 		font-size: 0.95rem;
 		font-weight: 600;
 		text-decoration: none;
-		transition:
-			background 0.2s,
-			transform 0.1s;
+		transition: background var(--transition-base), transform var(--transition-fast);
 		border: 1px solid rgba(255, 255, 255, 0.3);
 		display: inline-block;
 	}
@@ -155,16 +148,14 @@
 
 	.logout-btn {
 		background: rgba(255, 255, 255, 0.2);
-		color: white;
+		color: var(--color-white);
 		border: 1px solid rgba(255, 255, 255, 0.3);
-		padding: 0.5rem 1.25rem;
-		border-radius: 0.375rem;
+		padding: var(--space-2) var(--space-5);
+		border-radius: var(--radius-sm);
 		font-size: 0.95rem;
 		font-weight: 600;
 		cursor: pointer;
-		transition:
-			background 0.2s,
-			transform 0.1s;
+		transition: background var(--transition-base), transform var(--transition-fast);
 	}
 
 	.logout-btn:hover {
@@ -178,11 +169,11 @@
 
 	@media (max-width: 640px) {
 		.nav-container {
-			padding: 0.875rem 1rem;
+			padding: 0.875rem var(--space-4);
 		}
 
 		.nav-brand {
-			font-size: 1.25rem;
+			font-size: var(--font-size-xl);
 		}
 
 		.username-link {
@@ -190,13 +181,13 @@
 		}
 
 		.add-show-btn {
-			padding: 0.5rem 1rem;
-			font-size: 0.875rem;
+			padding: var(--space-2) var(--space-4);
+			font-size: var(--font-size-sm);
 		}
 
 		.logout-btn {
-			padding: 0.5rem 1rem;
-			font-size: 0.875rem;
+			padding: var(--space-2) var(--space-4);
+			font-size: var(--font-size-sm);
 		}
 	}
 </style>

@@ -117,7 +117,7 @@
 				{/if}
 			</div>
 
-			<button type="submit" disabled={isLoading}>
+			<button type="submit" class="btn-primary" disabled={isLoading}>
 				{isLoading ? "Signing in..." : "Sign in"}
 			</button>
 		</form>
@@ -134,29 +134,29 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		padding: 1rem;
+		background: var(--gradient-primary);
+		padding: var(--space-4);
 	}
 
 	.login-card {
-		background: white;
-		padding: 2.5rem;
-		border-radius: 1rem;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+		background: var(--color-white);
+		padding: var(--space-10);
+		border-radius: var(--radius-xl);
+		box-shadow: var(--shadow-xl);
 		width: 100%;
 		max-width: 420px;
 	}
 
 	h1 {
-		margin: 0 0 0.5rem 0;
+		margin: 0 0 var(--space-2) 0;
 		font-size: 1.75rem;
-		color: #1a202c;
+		color: var(--color-dark);
 		text-align: center;
 	}
 
 	.subtitle {
-		margin: 0 0 2rem 0;
-		color: #718096;
+		margin: 0 0 var(--space-8) 0;
+		color: var(--color-gray);
 		text-align: center;
 		font-size: 0.95rem;
 	}
@@ -164,99 +164,41 @@
 	form {
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
-	}
-
-	.error-banner {
-		background: #fed7d7;
-		color: #c53030;
-		padding: 0.875rem;
-		border-radius: 0.5rem;
-		font-size: 0.9rem;
-		border: 1px solid #fc8181;
+		gap: var(--space-5);
 	}
 
 	.form-group {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: var(--space-2);
 	}
 
 	label {
 		font-weight: 600;
-		color: #2d3748;
+		color: var(--color-dark-medium);
 		font-size: 0.95rem;
 	}
 
-	input {
-		padding: 0.75rem 1rem;
-		border: 1px solid #cbd5e0;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-		transition: all 0.2s;
-		font-family: inherit;
-	}
-
-	input:focus {
-		outline: none;
-		border-color: #667eea;
-		box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-	}
-
-	input[aria-invalid="true"] {
-		border-color: #fc8181;
-	}
-
-	input:disabled {
-		background: #f7fafc;
-		cursor: not-allowed;
-	}
-
 	.error-message {
-		color: #c53030;
-		font-size: 0.85rem;
-		margin-top: -0.25rem;
+		color: var(--color-error);
+		font-size: var(--font-size-sm);
+		margin-top: calc(-1 * var(--space-1));
 	}
 
-	button {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
-		padding: 0.875rem 1.5rem;
-		border: none;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition:
-			transform 0.2s,
-			box-shadow 0.2s;
-		margin-top: 0.5rem;
-	}
-
-	button:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-	}
-
-	button:active:not(:disabled) {
-		transform: translateY(0);
-	}
-
-	button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
+	.btn-primary {
+		margin-top: var(--space-2);
 	}
 
 	.register-link {
 		text-align: center;
-		margin-top: 1.5rem;
+		margin-top: var(--space-6);
 		margin-bottom: 0;
-		color: #718096;
-		font-size: 0.9rem;
+		color: var(--color-gray);
+		font-size: var(--font-size-sm);
 	}
 
 	.register-link a {
-		color: #667eea;
+		color: var(--color-primary);
 		text-decoration: none;
 		font-weight: 600;
 	}
@@ -267,11 +209,11 @@
 
 	@media (max-width: 480px) {
 		.login-card {
-			padding: 2rem 1.5rem;
+			padding: var(--space-8) var(--space-6);
 		}
 
 		h1 {
-			font-size: 1.5rem;
+			font-size: var(--font-size-xl);
 		}
 	}
 </style>

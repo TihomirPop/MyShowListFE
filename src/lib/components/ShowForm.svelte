@@ -346,7 +346,7 @@
 
 		<!-- Submit buttons -->
 		<div class="form-actions">
-			<button type="submit" class="submit-btn" disabled={isLoading || !canSubmit}>
+			<button type="submit" class="btn-primary submit-btn" disabled={isLoading || !canSubmit}>
 				{isLoading
 					? mode === 'create'
 						? 'Creating...'
@@ -355,7 +355,7 @@
 						? 'Create Show'
 						: 'Save Changes'}
 			</button>
-			<button type="button" class="cancel-btn" onclick={handleCancel} disabled={isLoading}>
+			<button type="button" class="btn-secondary cancel-btn" onclick={handleCancel} disabled={isLoading}>
 				Cancel
 			</button>
 		</div>
@@ -364,91 +364,51 @@
 
 <style>
 	.form-card {
-		background: white;
-		padding: 2.5rem;
-		border-radius: 1rem;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		background: var(--color-white);
+		padding: var(--space-10);
+		border-radius: var(--radius-xl);
+		box-shadow: var(--shadow-md);
 	}
 
 	h1 {
-		margin: 0 0 0.5rem 0;
-		font-size: 2rem;
-		color: #1a202c;
+		margin: 0 0 var(--space-2) 0;
+		font-size: var(--font-size-3xl);
+		color: var(--color-dark);
 	}
 
 	.subtitle {
-		margin: 0 0 2rem 0;
-		color: #718096;
+		margin: 0 0 var(--space-8) 0;
+		color: var(--color-gray);
 		font-size: 0.95rem;
 	}
 
 	form {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
-	}
-
-	.error-banner {
-		background: #fed7d7;
-		color: #c53030;
-		padding: 0.875rem;
-		border-radius: 0.5rem;
-		font-size: 0.9rem;
-		border: 1px solid #fc8181;
+		gap: var(--space-6);
 	}
 
 	.form-group {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: var(--space-2);
 	}
 
 	label {
 		font-weight: 600;
-		color: #2d3748;
+		color: var(--color-dark-medium);
 		font-size: 0.95rem;
 	}
 
-	input,
-	textarea,
-	.select-input {
-		padding: 0.75rem 1rem;
-		border: 1px solid #cbd5e0;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-		transition: all 0.2s;
-		font-family: inherit;
-	}
-
-	input:focus,
-	textarea:focus,
-	.select-input:focus {
-		outline: none;
-		border-color: #667eea;
-		box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-	}
-
-	input[aria-invalid='true'],
-	textarea[aria-invalid='true'] {
-		border-color: #fc8181;
-	}
-
-	input:disabled,
-	textarea:disabled,
-	.select-input:disabled {
-		background: #f7fafc;
-		cursor: not-allowed;
-	}
-
 	.error-message {
-		color: #c53030;
-		font-size: 0.85rem;
+		color: var(--color-error);
+		font-size: var(--font-size-sm);
 		margin-top: -0.25rem;
 	}
 
 	.field-hint {
-		color: #718096;
-		font-size: 0.85rem;
+		color: var(--color-gray);
+		font-size: var(--font-size-sm);
 		margin-top: -0.25rem;
 	}
 
@@ -456,23 +416,23 @@
 	.genres-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-		gap: 0.75rem;
-		padding: 1rem;
-		background: #f7fafc;
-		border-radius: 0.5rem;
-		border: 1px solid #cbd5e0;
+		gap: var(--space-3);
+		padding: var(--space-4);
+		background: var(--color-bg-light);
+		border-radius: var(--radius-md);
+		border: 1px solid var(--color-border);
 	}
 
 	.genre-checkbox {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--space-2);
 		cursor: pointer;
 		font-size: 0.9rem;
-		color: #2d3748;
-		padding: 0.5rem;
-		border-radius: 0.375rem;
-		transition: background 0.2s;
+		color: var(--color-dark-medium);
+		padding: var(--space-2);
+		border-radius: var(--radius-sm);
+		transition: background var(--transition-base);
 	}
 
 	.genre-checkbox:hover {
@@ -494,87 +454,45 @@
 	.form-row {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 1rem;
+		gap: var(--space-4);
 	}
 
 	/* Form actions */
 	.form-actions {
 		display: flex;
-		gap: 1rem;
-		margin-top: 1rem;
+		gap: var(--space-4);
+		margin-top: var(--space-4);
 	}
 
 	.submit-btn {
 		flex: 1;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
-		padding: 0.875rem 1.5rem;
-		border: none;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition:
-			transform 0.2s,
-			box-shadow 0.2s;
-	}
-
-	.submit-btn:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-	}
-
-	.submit-btn:active:not(:disabled) {
-		transform: translateY(0);
-	}
-
-	.submit-btn:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
+		padding: 0.875rem var(--space-6);
 	}
 
 	.cancel-btn {
-		padding: 0.875rem 1.5rem;
-		border: 2px solid #cbd5e0;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-		font-weight: 600;
-		color: #4a5568;
-		background: white;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.cancel-btn:hover:not(:disabled) {
-		border-color: #a0aec0;
-		background: #f7fafc;
-	}
-
-	.cancel-btn:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
+		padding: 0.875rem var(--space-6);
 	}
 
 	.thumbnail-preview-container {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
-		margin-top: 0.75rem;
+		gap: var(--space-2);
+		margin-top: var(--space-3);
 	}
 
 	.preview-label {
 		font-weight: 600;
-		color: #4a5568;
+		color: var(--color-dark-light);
 		font-size: 0.875rem;
 	}
 
 	.thumbnail-preview {
 		width: 200px;
 		height: 300px;
-		border-radius: 0.75rem;
+		border-radius: var(--radius-lg);
 		overflow: hidden;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		border: 2px solid #e2e8f0;
+		box-shadow: var(--shadow-md);
+		border: 2px solid var(--color-border-light);
 	}
 
 	.preview-image {
@@ -594,7 +512,7 @@
 
 	@media (max-width: 768px) {
 		.form-card {
-			padding: 2rem 1.5rem;
+			padding: var(--space-8) var(--space-6);
 		}
 
 		.form-row {
@@ -611,7 +529,7 @@
 
 		.thumbnail-preview {
 			width: 150px;
-			height: 225px; /* maintains 2:3 ratio */
+			height: 225px;
 		}
 	}
 </style>

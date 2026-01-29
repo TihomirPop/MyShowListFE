@@ -142,16 +142,16 @@
 
 			{#if isAdmin}
 				<div class="admin-actions">
-					<button class="edit-button" onclick={handleEdit} disabled={isDeleting}>
+					<button class="btn-primary" onclick={handleEdit} disabled={isDeleting}>
 						Edit Show
 					</button>
-					<button class="delete-button" onclick={handleDelete} disabled={isDeleting}>
+					<button class="btn-danger" onclick={handleDelete} disabled={isDeleting}>
 						{isDeleting ? 'Deleting...' : 'Delete Show'}
 					</button>
 				</div>
 
 				{#if deleteError}
-					<div class="delete-error">
+					<div class="error-banner">
 						{deleteError}
 					</div>
 				{/if}
@@ -208,22 +208,22 @@
 	.container {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 2rem 1.5rem;
+		padding: var(--space-8) var(--space-6);
 	}
 
 	.breadcrumb {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		margin-bottom: 2rem;
-		font-size: 0.9rem;
-		color: #718096;
+		gap: var(--space-2);
+		margin-bottom: var(--space-8);
+		font-size: var(--font-size-sm);
+		color: var(--color-gray);
 	}
 
 	.breadcrumb a {
-		color: #667eea;
+		color: var(--color-primary);
 		text-decoration: none;
-		transition: opacity 0.2s;
+		transition: opacity var(--transition-base);
 	}
 
 	.breadcrumb a:hover {
@@ -231,28 +231,28 @@
 	}
 
 	.separator {
-		color: #cbd5e0;
+		color: var(--color-border);
 	}
 
 	.current {
-		color: #2d3748;
+		color: var(--color-dark-medium);
 		font-weight: 500;
 	}
 
 	.show-header {
 		display: grid;
 		grid-template-columns: 300px 1fr;
-		gap: 2rem;
-		margin-bottom: 3rem;
+		gap: var(--space-8);
+		margin-bottom: var(--space-12);
 	}
 
 	.show-thumbnail-container {
 		width: 300px;
 		height: 450px;
 		position: relative;
-		border-radius: 0.75rem;
+		border-radius: var(--radius-lg);
 		overflow: hidden;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.show-thumbnail-image {
@@ -272,13 +272,13 @@
 
 	.show-type-badge {
 		position: absolute;
-		top: 1rem;
-		left: 1rem;
+		top: var(--space-4);
+		left: var(--space-4);
 		background: rgba(255, 255, 255, 0.9);
-		color: #2d3748;
-		padding: 0.5rem 1rem;
-		border-radius: 0.5rem;
-		font-size: 0.875rem;
+		color: var(--color-dark-medium);
+		padding: var(--space-2) var(--space-4);
+		border-radius: var(--radius-md);
+		font-size: var(--font-size-sm);
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
@@ -286,143 +286,93 @@
 	}
 
 	.show-title {
-		margin: 0 0 1.5rem 0;
-		font-size: 2.5rem;
-		color: #1a202c;
+		margin: 0 0 var(--space-6) 0;
+		font-size: var(--font-size-3xl);
+		color: var(--color-dark);
 		line-height: 1.2;
 	}
 
 	.show-meta {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		margin-bottom: 1.5rem;
+		gap: var(--space-4);
+		margin-bottom: var(--space-6);
 	}
 
 	.meta-item {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
+		gap: var(--space-3);
 	}
 
 	.meta-label {
 		font-weight: 600;
-		color: #4a5568;
+		color: var(--color-dark-light);
 		min-width: 120px;
 	}
 
 	.meta-value {
-		color: #2d3748;
+		color: var(--color-dark-medium);
 	}
 
 	.show-score {
 		display: flex;
 		align-items: center;
-		gap: 0.375rem;
+		gap: var(--space-2);
 	}
 
 	.score-icon {
-		font-size: 1.25rem;
+		font-size: var(--font-size-xl);
 	}
 
 	.score-value {
 		font-weight: 700;
-		color: #667eea;
-		font-size: 1.125rem;
+		color: var(--color-primary);
+		font-size: var(--font-size-lg);
 	}
 
 	.show-genres {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem;
+		gap: var(--space-2);
 	}
 
 	.genre-tag {
-		background: #f7fafc;
-		color: #4a5568;
-		padding: 0.5rem 1rem;
-		border-radius: 0.375rem;
-		font-size: 0.875rem;
+		background: var(--color-bg-light);
+		color: var(--color-dark-light);
+		padding: var(--space-2) var(--space-4);
+		border-radius: var(--radius-sm);
+		font-size: var(--font-size-sm);
 		font-weight: 500;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--color-border-light);
 	}
 
 	.show-description-section {
-		background: white;
-		padding: 2rem;
-		border-radius: 0.75rem;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		margin-bottom: 2rem;
+		background: var(--color-white);
+		padding: var(--space-8);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-md);
+		margin-bottom: var(--space-8);
 	}
 
 	.show-description-section h2 {
-		margin: 0 0 1rem 0;
-		color: #2d3748;
-		font-size: 1.5rem;
+		margin: 0 0 var(--space-4) 0;
+		color: var(--color-dark-medium);
+		font-size: var(--font-size-2xl);
 	}
 
 	.show-description {
-		color: #4a5568;
+		color: var(--color-dark-light);
 		line-height: 1.7;
 		margin: 0;
 	}
 
 	.admin-actions {
 		display: flex;
-		gap: 0.75rem;
-		margin-bottom: 1.5rem;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid #e2e8f0;
-	}
-
-	.edit-button,
-	.delete-button {
-		padding: 0.625rem 1.25rem;
-		border: none;
-		border-radius: 0.5rem;
-		font-size: 0.9rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.edit-button {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
-		box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-	}
-
-	.edit-button:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-	}
-
-	.delete-button {
-		background: #fff5f5;
-		color: #c53030;
-		border: 1px solid #fc8181;
-	}
-
-	.delete-button:hover:not(:disabled) {
-		background: #fed7d7;
-		border-color: #f56565;
-	}
-
-	.edit-button:disabled,
-	.delete-button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-		transform: none;
-	}
-
-	.delete-error {
-		margin-bottom: 1rem;
-		padding: 0.75rem;
-		background: #fff5f5;
-		border: 1px solid #fc8181;
-		border-radius: 0.375rem;
-		color: #c53030;
-		font-size: 0.9rem;
+		gap: var(--space-3);
+		margin-bottom: var(--space-6);
+		padding-bottom: var(--space-4);
+		border-bottom: 1px solid var(--color-border-light);
 	}
 
 	@media (max-width: 768px) {
@@ -436,15 +386,15 @@
 		}
 
 		.show-title {
-			font-size: 2rem;
+			font-size: var(--font-size-2xl);
 		}
 
 		.admin-actions {
 			flex-direction: column;
 		}
 
-		.edit-button,
-		.delete-button {
+		.btn-primary,
+		.btn-danger {
 			width: 100%;
 		}
 	}

@@ -60,23 +60,20 @@
 		<p class="hero-text">Welcome to MyShowList - Your personal TV show tracker</p>
 	</div>
 
-	<div class="hello-world">
-		<h2>Hello World</h2>
-		<p>This is your authenticated home page. You're successfully logged in!</p>
-	</div>
-
 	<section class="shows-section">
 		<h2>All Shows</h2>
 
 		{#if isLoading}
-			<div class="loading-state">
-				<div class="spinner"></div>
+			<div class="loading-container">
+				<div class="loading-spinner"></div>
 				<p>Loading shows...</p>
 			</div>
 		{:else if error}
-			<div class="error-state">
-				<p class="error-message">{error}</p>
-				<button onclick={loadShows} class="retry-button">Try Again</button>
+			<div class="error-banner">
+				{error}
+			</div>
+			<div style="text-align: center; margin-top: 1rem;">
+				<button onclick={loadShows} class="btn-primary">Try Again</button>
 			</div>
 		{:else if shows.length === 0}
 			<div class="empty-state">
@@ -149,199 +146,96 @@
 		</div>
 	</div>
 
-	<div class="getting-started">
-		<h2>Getting Started</h2>
-		<p>Features are coming soon! This application is currently under development.</p>
-		<p>Stay tuned for updates as we build out the full show tracking experience.</p>
-	</div>
 </div>
 
 <style>
 	.container {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 2rem 1.5rem;
+		padding: var(--space-8) var(--space-6);
 	}
 
 	.hero {
 		text-align: center;
-		margin-bottom: 3rem;
-		padding: 2rem 0;
+		margin-bottom: var(--space-12);
+		padding: var(--space-8) 0;
 	}
 
 	h1 {
-		margin: 0 0 1rem 0;
-		font-size: 2.5rem;
-		color: #1a202c;
+		margin: 0 0 var(--space-4) 0;
+		font-size: var(--font-size-3xl);
+		color: var(--color-dark);
 		font-weight: 700;
 	}
 
 	.hero-text {
-		font-size: 1.25rem;
-		color: #718096;
+		font-size: var(--font-size-xl);
+		color: var(--color-gray);
 		margin: 0;
-	}
-
-	.hello-world {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
-		padding: 2rem;
-		border-radius: 1rem;
-		margin-bottom: 3rem;
-		text-align: center;
-		box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-	}
-
-	.hello-world h2 {
-		margin: 0 0 0.5rem 0;
-		font-size: 2rem;
-	}
-
-	.hello-world p {
-		margin: 0;
-		font-size: 1.1rem;
-		opacity: 0.95;
 	}
 
 	.features {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
-		margin-bottom: 3rem;
+		gap: var(--space-6);
+		margin-bottom: var(--space-12);
 	}
 
 	.feature-card {
-		background: white;
-		padding: 2rem;
-		border-radius: 0.75rem;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		transition: transform 0.2s, box-shadow 0.2s;
+		background: var(--color-white);
+		padding: var(--space-8);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-md);
+		transition: transform var(--transition-base), box-shadow var(--transition-base);
 		text-align: center;
 	}
 
 	.feature-card:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.feature-icon {
 		font-size: 3rem;
-		margin-bottom: 1rem;
+		margin-bottom: var(--space-4);
 	}
 
 	.feature-card h3 {
-		margin: 0 0 0.75rem 0;
-		color: #2d3748;
-		font-size: 1.25rem;
+		margin: 0 0 var(--space-3) 0;
+		color: var(--color-dark-medium);
+		font-size: var(--font-size-xl);
 	}
 
 	.feature-card p {
 		margin: 0;
-		color: #718096;
-		line-height: 1.6;
-	}
-
-	.getting-started {
-		background: #f7fafc;
-		padding: 2rem;
-		border-radius: 0.75rem;
-		text-align: center;
-		border: 2px dashed #cbd5e0;
-	}
-
-	.getting-started h2 {
-		margin: 0 0 1rem 0;
-		color: #2d3748;
-	}
-
-	.getting-started p {
-		margin: 0.5rem 0;
-		color: #718096;
+		color: var(--color-gray);
 		line-height: 1.6;
 	}
 
 	.shows-section {
-		margin-bottom: 3rem;
+		margin-bottom: var(--space-12);
 	}
 
 	.shows-section h2 {
-		margin: 0 0 1.5rem 0;
+		margin: 0 0 var(--space-6) 0;
 		font-size: 1.75rem;
-		color: #1a202c;
-	}
-
-	.loading-state {
-		text-align: center;
-		padding: 3rem;
-		color: #718096;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		margin: 0 auto 1rem;
-		border: 3px solid #e2e8f0;
-		border-top-color: #667eea;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.error-state {
-		text-align: center;
-		padding: 2rem;
-		background: #fff5f5;
-		border-radius: 0.75rem;
-		border: 1px solid #fc8181;
-	}
-
-	.error-message {
-		color: #c53030;
-		margin: 0 0 1rem 0;
-	}
-
-	.retry-button {
-		background: #667eea;
-		color: white;
-		padding: 0.75rem 1.5rem;
-		border: none;
-		border-radius: 0.5rem;
-		cursor: pointer;
-		font-size: 0.95rem;
-		transition: background 0.2s;
-	}
-
-	.retry-button:hover {
-		background: #5568d3;
-	}
-
-	.empty-state {
-		text-align: center;
-		padding: 3rem;
-		background: #f7fafc;
-		border-radius: 0.75rem;
-		border: 2px dashed #cbd5e0;
+		color: var(--color-dark);
 	}
 
 	.empty-state p {
-		margin: 0.5rem 0;
-		color: #718096;
+		margin: var(--space-2) 0;
+		color: var(--color-gray);
 	}
 
 	.empty-state .hint {
-		font-size: 0.9rem;
-		color: #a0aec0;
+		font-size: var(--font-size-sm);
+		color: var(--color-gray-light);
 	}
 
 	.shows-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
+		gap: var(--space-6);
 	}
 
 	.show-card-link {
@@ -351,22 +245,22 @@
 	}
 
 	.show-card {
-		background: white;
-		border-radius: 0.75rem;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		transition: transform 0.2s, box-shadow 0.2s;
+		background: var(--color-white);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-md);
+		transition: transform var(--transition-base), box-shadow var(--transition-base);
 		overflow: hidden;
 		height: 100%;
 	}
 
 	.show-card-link:hover .show-card {
 		transform: translateY(-4px);
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.show-thumbnail {
 		width: 100%;
-		height: 200px;
+		aspect-ratio: 2 / 3;
 		position: relative;
 		overflow: hidden;
 	}
@@ -388,12 +282,12 @@
 
 	.show-type-badge {
 		position: absolute;
-		top: 0.75rem;
-		left: 0.75rem;
+		top: var(--space-3);
+		left: var(--space-3);
 		background: rgba(255, 255, 255, 0.9);
-		color: #2d3748;
-		padding: 0.375rem 0.75rem;
-		border-radius: 0.375rem;
+		color: var(--color-dark-medium);
+		padding: var(--space-2) var(--space-3);
+		border-radius: var(--radius-sm);
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: uppercase;
@@ -402,13 +296,13 @@
 	}
 
 	.show-info {
-		padding: 1.25rem;
+		padding: var(--space-5);
 	}
 
 	.show-info h3 {
-		margin: 0 0 0.75rem 0;
-		font-size: 1.125rem;
-		color: #2d3748;
+		margin: 0 0 var(--space-3) 0;
+		font-size: var(--font-size-lg);
+		color: var(--color-dark-medium);
 		line-height: 1.4;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -420,24 +314,24 @@
 	.show-score {
 		display: flex;
 		align-items: center;
-		gap: 0.375rem;
-		margin-bottom: 0.5rem;
+		gap: var(--space-2);
+		margin-bottom: var(--space-2);
 	}
 
 	.score-icon {
-		font-size: 1.125rem;
+		font-size: var(--font-size-lg);
 	}
 
 	.score-value {
 		font-weight: 600;
-		color: #667eea;
-		font-size: 1rem;
+		color: var(--color-primary);
+		font-size: var(--font-size-base);
 	}
 
 	.show-genres {
-		font-size: 0.85rem;
-		color: #718096;
-		margin-top: 0.5rem;
+		font-size: var(--font-size-sm);
+		color: var(--color-gray);
+		margin-top: var(--space-2);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -445,23 +339,19 @@
 
 	@media (max-width: 768px) {
 		.container {
-			padding: 1.5rem 1rem;
+			padding: var(--space-6) var(--space-4);
 		}
 
 		h1 {
-			font-size: 2rem;
+			font-size: var(--font-size-2xl);
 		}
 
 		.hero-text {
 			font-size: 1.1rem;
 		}
 
-		.hello-world h2 {
-			font-size: 1.5rem;
-		}
-
 		.shows-section h2 {
-			font-size: 1.5rem;
+			font-size: var(--font-size-xl);
 		}
 
 		.shows-grid {

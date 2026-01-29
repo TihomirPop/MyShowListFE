@@ -127,22 +127,22 @@
 	.container {
 		max-width: 800px;
 		margin: 0 auto;
-		padding: 2rem 1.5rem;
+		padding: var(--space-8) var(--space-6);
 	}
 
 	.breadcrumb {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		margin-bottom: 2rem;
-		font-size: 0.9rem;
-		color: #718096;
+		gap: var(--space-2);
+		margin-bottom: var(--space-8);
+		font-size: var(--font-size-sm);
+		color: var(--color-gray);
 	}
 
 	.breadcrumb a {
-		color: #667eea;
+		color: var(--color-primary);
 		text-decoration: none;
-		transition: opacity 0.2s;
+		transition: opacity var(--transition-base);
 	}
 
 	.breadcrumb a:hover {
@@ -150,11 +150,11 @@
 	}
 
 	.separator {
-		color: #cbd5e0;
+		color: var(--color-border);
 	}
 
 	.current {
-		color: #2d3748;
+		color: var(--color-dark-medium);
 		font-weight: 500;
 	}
 </style>
