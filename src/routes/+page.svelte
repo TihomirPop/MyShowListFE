@@ -11,11 +11,39 @@
 	let imageErrors = $state<Map<string, boolean>>(new Map());
 	let sortField = $state<'averageScore' | 'date'>('averageScore');
 	let sortDirection = $state<'asc' | 'desc'>('desc');
+	let searchQuery = $state('');
 
 	function handleImageError(showId: string) {
 		const newErrors = new Map(imageErrors);
 		newErrors.set(showId, true);
 		imageErrors = newErrors;
+	}
+
+	function filterShows(shows: ShowDto[], query: string): ShowDto[] {
+		if (!query.trim()) {
+			return shows; // No filtering if search is empty
+		}
+
+		const lowerQuery = query.toLowerCase();
+
+		return shows.filter((show) => {
+			// Search in title
+			if (show.title.toLowerCase().includes(lowerQuery)) {
+				return true;
+			}
+
+			// Search in description
+			if (show.description.toLowerCase().includes(lowerQuery)) {
+				return true;
+			}
+
+			// Search in genres (array of strings)
+			if (show.genres.some((genre) => genre.toLowerCase().includes(lowerQuery))) {
+				return true;
+			}
+
+			return false;
+		});
 	}
 
 	function sortShows(
@@ -60,7 +88,9 @@
 		return sorted;
 	}
 
-	const sortedShows = $derived(sortShows(shows, sortField, sortDirection));
+	// Chain filtering then sorting
+	const filteredShows = $derived(filterShows(shows, searchQuery));
+	const sortedShows = $derived(sortShows(filteredShows, sortField, sortDirection));
 
 	onMount(async () => {
 		await loadShows();
@@ -107,9 +137,21 @@
 	</div>
 
 	<section class="shows-section">
-		<h2>All Shows</h2>
+		<h2>All Shows {#if sortedShows.length > 0}<span class="show-count">({sortedShows.length}{searchQuery.trim() ? ' filtered' : ''})</span>{/if}</h2>
 
 		<div class="controls-section">
+			<div class="control-group search-group">
+				<label for="search-input">Search:</label>
+				<input
+					type="search"
+					id="search-input"
+					bind:value={searchQuery}
+					placeholder="Search shows..."
+					disabled={isLoading}
+					aria-label="Search shows"
+				/>
+			</div>
+
 			<div class="control-group">
 				<label for="sort-field">Sort by:</label>
 				<select
@@ -147,10 +189,15 @@
 			<div style="text-align: center; margin-top: 1rem;">
 				<button onclick={loadShows} class="btn-primary">Try Again</button>
 			</div>
-		{:else if shows.length === 0}
+		{:else if sortedShows.length === 0}
 			<div class="empty-state">
-				<p>No shows available yet.</p>
-				<p class="hint">Check back later for new content!</p>
+				{#if searchQuery.trim()}
+					<p>No shows found matching "{searchQuery}"</p>
+					<p class="hint">Try a different search term.</p>
+				{:else}
+					<p>No shows available yet.</p>
+					<p class="hint">Check back later for new content!</p>
+				{/if}
 			</div>
 		{:else}
 			<div class="shows-grid">
@@ -292,6 +339,15 @@
 		margin: 0 0 var(--space-6) 0;
 		font-size: 1.75rem;
 		color: var(--color-dark);
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
+
+	.show-count {
+		font-size: var(--font-size-xl);
+		color: var(--color-gray);
+		font-weight: 400;
 	}
 
 	.controls-section {
@@ -317,6 +373,39 @@
 
 	.control-group select {
 		min-width: 180px;
+	}
+
+	.search-group {
+		flex: 1;
+		min-width: 250px;
+		max-width: 400px;
+	}
+
+	.search-group input {
+		width: 100%;
+		padding: var(--space-3) var(--space-4);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		font-size: var(--font-size-base);
+		color: var(--color-dark);
+		background: var(--color-white);
+		transition: border-color var(--transition-base);
+	}
+
+	.search-group input:focus {
+		outline: none;
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+	}
+
+	.search-group input:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		background: var(--color-bg-light);
+	}
+
+	.search-group input::placeholder {
+		color: var(--color-gray-light);
 	}
 
 	.sort-direction-btn {
@@ -360,7 +449,7 @@
 
 	.shows-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 		gap: var(--space-6);
 	}
 
@@ -492,6 +581,12 @@
 
 		.control-group select {
 			flex: 1;
+			min-width: 0;
+		}
+
+		.search-group {
+			width: 100%;
+			max-width: none;
 			min-width: 0;
 		}
 
