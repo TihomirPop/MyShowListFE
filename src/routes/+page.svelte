@@ -9,12 +9,58 @@
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
 	let imageErrors = $state<Map<string, boolean>>(new Map());
+	let sortField = $state<'averageScore' | 'date'>('averageScore');
+	let sortDirection = $state<'asc' | 'desc'>('desc');
 
 	function handleImageError(showId: string) {
 		const newErrors = new Map(imageErrors);
 		newErrors.set(showId, true);
 		imageErrors = newErrors;
 	}
+
+	function sortShows(
+		shows: ShowDto[],
+		field: 'averageScore' | 'date',
+		direction: 'asc' | 'desc'
+	): ShowDto[] {
+		const sorted = [...shows]; // Shallow copy to avoid mutation
+
+		sorted.sort((a, b) => {
+			let compareResult: number;
+
+			if (field === 'averageScore') {
+				// Handle null scores - push to end
+				if (a.averageScore === null && b.averageScore === null) return 0;
+				if (a.averageScore === null) return 1;
+				if (b.averageScore === null) return -1;
+
+				compareResult = a.averageScore - b.averageScore;
+			} else {
+				// field === 'date'
+				// Extract date based on discriminated union type
+				const dateA = a.type === 'MOVIE' ? a.releaseDate : a.startDate;
+				const dateB = b.type === 'MOVIE' ? b.releaseDate : b.startDate;
+
+				// Handle null dates - push to end
+				if (dateA === null && dateB === null) return 0;
+				if (dateA === null) return 1;
+				if (dateB === null) return -1;
+
+				// Parse ISO date strings and compare
+				const timeA = new Date(dateA).getTime();
+				const timeB = new Date(dateB).getTime();
+
+				compareResult = timeA - timeB;
+			}
+
+			// Apply direction multiplier
+			return direction === 'asc' ? compareResult : -compareResult;
+		});
+
+		return sorted;
+	}
+
+	const sortedShows = $derived(sortShows(shows, sortField, sortDirection));
 
 	onMount(async () => {
 		await loadShows();
@@ -63,6 +109,32 @@
 	<section class="shows-section">
 		<h2>All Shows</h2>
 
+		<div class="controls-section">
+			<div class="control-group">
+				<label for="sort-field">Sort by:</label>
+				<select
+					id="sort-field"
+					bind:value={sortField}
+					disabled={isLoading}
+					aria-label="Sort shows by"
+				>
+					<option value="averageScore">Average Score</option>
+					<option value="date">Release Date</option>
+				</select>
+			</div>
+
+			<button
+				type="button"
+				class="sort-direction-btn"
+				onclick={() => (sortDirection = sortDirection === 'asc' ? 'desc' : 'asc')}
+				disabled={isLoading}
+				aria-label="Toggle sort direction"
+				title={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
+			>
+				{sortDirection === 'asc' ? '⭡' : '⭣'}
+			</button>
+		</div>
+
 		{#if isLoading}
 			<div class="loading-container">
 				<div class="loading-spinner"></div>
@@ -82,7 +154,7 @@
 			</div>
 		{:else}
 			<div class="shows-grid">
-				{#each shows as show, index (show.id)}
+				{#each sortedShows as show, index (show.id)}
 					<a href="/shows/{show.id}" class="show-card-link">
 						<article class="show-card">
 							<div class="show-thumbnail">
@@ -222,6 +294,60 @@
 		color: var(--color-dark);
 	}
 
+	.controls-section {
+		display: flex;
+		align-items: center;
+		gap: var(--space-6);
+		margin-bottom: var(--space-6);
+		flex-wrap: wrap;
+	}
+
+	.control-group {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+	}
+
+	.control-group label {
+		font-weight: 600;
+		color: var(--color-dark-medium);
+		font-size: 0.95rem;
+		white-space: nowrap;
+	}
+
+	.control-group select {
+		min-width: 180px;
+	}
+
+	.sort-direction-btn {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		background: var(--color-white);
+		color: var(--color-dark-medium);
+		border: 1px solid var(--color-border);
+		padding: var(--space-3) var(--space-4);
+		border-radius: var(--radius-md);
+		font-size: var(--font-size-base);
+		cursor: pointer;
+		transition: all var(--transition-base);
+	}
+
+	.sort-direction-btn:hover:not(:disabled) {
+		background: var(--color-bg-light);
+		border-color: var(--color-primary);
+		color: var(--color-primary);
+	}
+
+	.sort-direction-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.direction-label {
+		font-size: 0.9rem;
+	}
+
 	.empty-state p {
 		margin: var(--space-2) 0;
 		color: var(--color-gray);
@@ -352,6 +478,26 @@
 
 		.shows-section h2 {
 			font-size: var(--font-size-xl);
+		}
+
+		.controls-section {
+			flex-direction: column;
+			align-items: stretch;
+			gap: var(--space-4);
+		}
+
+		.control-group {
+			width: 100%;
+		}
+
+		.control-group select {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.sort-direction-btn {
+			width: 100%;
+			justify-content: center;
 		}
 
 		.shows-grid {

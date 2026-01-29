@@ -11,6 +11,8 @@
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
 	let imageErrors = $state<Map<string, boolean>>(new Map());
+	let sortField = $state<'averageScore' | 'date' | 'score'>('score');
+	let sortDirection = $state<'asc' | 'desc'>('desc');
 
 	const showCount = $derived(userShows.length);
 
@@ -19,6 +21,53 @@
 		newErrors.set(showId, true);
 		imageErrors = newErrors;
 	}
+
+	function sortUserShows(
+		userShows: UserShowDto[],
+		field: 'averageScore' | 'date' | 'score',
+		direction: 'asc' | 'desc'
+	): UserShowDto[] {
+		const sorted = [...userShows]; // Shallow copy to avoid mutation
+
+		sorted.sort((a, b) => {
+			let compareResult: number;
+
+			if (field === 'averageScore') {
+				// Handle null scores - push to end
+				if (a.show.averageScore === null && b.show.averageScore === null) return 0;
+				if (a.show.averageScore === null) return 1;
+				if (b.show.averageScore === null) return -1;
+
+				compareResult = a.show.averageScore - b.show.averageScore;
+			} else if (field === 'date') {
+				// field === 'date'
+				// Extract date based on discriminated union type
+				const dateA = a.show.type === 'MOVIE' ? a.show.releaseDate : a.show.startDate;
+				const dateB = b.show.type === 'MOVIE' ? b.show.releaseDate : b.show.startDate;
+
+				// Handle null dates - push to end
+				if (dateA === null && dateB === null) return 0;
+				if (dateA === null) return 1;
+				if (dateB === null) return -1;
+
+				// Parse ISO date strings and compare
+				const timeA = new Date(dateA).getTime();
+				const timeB = new Date(dateB).getTime();
+
+				compareResult = timeA - timeB;
+			} else {
+				// field === 'score'
+				compareResult = a.score - b.score;
+			}
+
+			// Apply direction multiplier
+			return direction === 'asc' ? compareResult : -compareResult;
+		});
+
+		return sorted;
+	}
+
+	const sortedUserShows = $derived(sortUserShows(userShows, sortField, sortDirection));
 
 	onMount(async () => {
 		await loadUserShows();
@@ -70,6 +119,36 @@
 	<section class="shows-section">
 		<h2>Your Shows {#if showCount > 0}<span class="show-count">({showCount})</span>{/if}</h2>
 
+		<div class="controls-section">
+			<div class="control-group">
+				<label for="sort-field">Sort by:</label>
+				<select
+					id="sort-field"
+					bind:value={sortField}
+					disabled={isLoading}
+					aria-label="Sort shows by"
+				>
+					<option value="score">Your Score</option>
+					<option value="averageScore">Average Score</option>
+					<option value="date">Release Date</option>
+				</select>
+			</div>
+
+			<button
+				type="button"
+				class="sort-direction-btn"
+				onclick={() => (sortDirection = sortDirection === 'asc' ? 'desc' : 'asc')}
+				disabled={isLoading}
+				aria-label="Toggle sort direction"
+				title={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
+			>
+				{sortDirection === 'asc' ? '↑' : '↓'}
+				<span class="direction-label"
+					>{sortDirection === 'asc' ? 'Ascending' : 'Descending'}</span
+				>
+			</button>
+		</div>
+
 		{#if isLoading}
 			<div class="loading-container">
 				<div class="loading-spinner"></div>
@@ -91,7 +170,7 @@
 			</div>
 		{:else}
 			<div class="shows-grid">
-				{#each userShows as userShow, index (userShow.show.id)}
+				{#each sortedUserShows as userShow, index (userShow.show.id)}
 					<a href="/shows/{userShow.show.id}" class="show-card-link">
 						<article class="user-show-card">
 							<div class="show-thumbnail">
@@ -190,6 +269,61 @@
 		font-size: var(--font-size-xl);
 		color: var(--color-gray);
 		font-weight: 400;
+	}
+
+	.controls-section {
+		display: flex;
+		align-items: center;
+		gap: var(--space-6);
+		margin-bottom: var(--space-6);
+		flex-wrap: wrap;
+	}
+
+	.control-group {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+	}
+
+	.control-group label {
+		font-weight: 600;
+		color: var(--color-dark-medium);
+		font-size: 0.95rem;
+		white-space: nowrap;
+	}
+
+	.control-group select {
+		min-width: 180px;
+	}
+
+	.sort-direction-btn {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		background: var(--color-white);
+		color: var(--color-dark-medium);
+		border: 1px solid var(--color-border);
+		padding: var(--space-3) var(--space-4);
+		border-radius: var(--radius-md);
+		font-size: var(--font-size-base);
+		font-weight: 600;
+		cursor: pointer;
+		transition: all var(--transition-base);
+	}
+
+	.sort-direction-btn:hover:not(:disabled) {
+		background: var(--color-bg-light);
+		border-color: var(--color-primary);
+		color: var(--color-primary);
+	}
+
+	.sort-direction-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.direction-label {
+		font-size: 0.9rem;
 	}
 
 	.empty-icon {
@@ -391,6 +525,26 @@
 
 		.shows-section h2 {
 			font-size: var(--font-size-xl);
+		}
+
+		.controls-section {
+			flex-direction: column;
+			align-items: stretch;
+			gap: var(--space-4);
+		}
+
+		.control-group {
+			width: 100%;
+		}
+
+		.control-group select {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.sort-direction-btn {
+			width: 100%;
+			justify-content: center;
 		}
 
 		.shows-grid {
