@@ -63,6 +63,10 @@
 	<nav class="navbar">
 		<div class="nav-container">
 			<a href="/" class="nav-brand">MyShowList</a>
+			<div class="nav-links">
+				<a href="/" class="nav-link">Home</a>
+				<a href="/mylist" class="nav-link">My List</a>
+			</div>
 			<div class="nav-items">
 				{#if authStore.user?.role === 'ADMIN'}
 					<a href="/shows/new" class="add-show-btn">Add Show</a>
@@ -103,6 +107,25 @@
 
 	.nav-brand:hover {
 		opacity: 0.9;
+	}
+
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: var(--space-6);
+	}
+
+	.nav-link {
+		color: var(--color-white);
+		font-weight: 500;
+		text-decoration: none;
+		transition: opacity var(--transition-base);
+		cursor: pointer;
+	}
+
+	.nav-link:hover {
+		opacity: 0.8;
+		text-decoration: underline;
 	}
 
 	.nav-items {
@@ -174,6 +197,14 @@
 
 		.nav-brand {
 			font-size: var(--font-size-xl);
+		}
+
+		.nav-links {
+			gap: var(--space-4);
+		}
+
+		.nav-link {
+			font-size: var(--font-size-sm);
 		}
 
 		.username-link {
