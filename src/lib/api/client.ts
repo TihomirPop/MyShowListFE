@@ -158,6 +158,9 @@ export async function getShowsAPI(token: string): Promise<ShowResponse> {
 	});
 }
 
+/**
+ * Fetch a single show by ID (requires authentication)
+ */
 export async function getShowByIdAPI(
 	showId: string,
 	token: string

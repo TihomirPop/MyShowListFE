@@ -18,7 +18,7 @@
 		);
 		const isAuthenticated = authStore.isAuthenticated;
 
-		// If user is authenticated and trying to access login/register, redirect to home todo: fix bad logic
+		// If user is authenticated and trying to access login/register, redirect to home
 		if (isAuthenticated && isPublicRoute) {
 			cancel();
 			goto("/");
@@ -36,7 +36,6 @@
 	// Handle initial page load - check if we need to redirect
 	$effect(() => {
 		if (typeof window !== "undefined") {
-			//todo: merge logic?
 			const currentPath = window.location.pathname;
 			const isPublicRoute = PUBLIC_ROUTES.some((route) =>
 				currentPath.startsWith(route),
@@ -62,12 +61,10 @@
 {#if authStore.isAuthenticated}
 	<nav class="navbar">
 		<div class="nav-container">
-			<div class="nav-left">
-				<a href="/" class="nav-brand">MyShowList</a>
-				<div class="nav-links">
-					<a href="/" class="nav-link">Home</a>
-					<a href="/mylist" class="nav-link">My List</a>
-				</div>
+			<a href="/" class="nav-brand">MyShowList</a>
+			<div class="nav-links">
+				<a href="/" class="nav-link">Home</a>
+				<a href="/mylist" class="nav-link">My List</a>
 			</div>
 			<div class="nav-items">
 				{#if authStore.user?.role === 'ADMIN'}
@@ -97,12 +94,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-	}
-
-	.nav-left {
-		display: flex;
-		align-items: center;
-		gap: var(--space-8);
 	}
 
 	.nav-brand {
