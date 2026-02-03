@@ -245,7 +245,7 @@
 
 		<!-- Genres (Checkbox Group) -->
 		<div class="form-group">
-			<label id="genres-label">Genres * (select at least one)</label>
+			<span id="genres-label" class="label">Genres * (select at least one)</span>
 			<div class="genres-grid" role="group" aria-labelledby="genres-label">
 				{#each ALLOWED_GENRES as genre (genre)}
 					<label class="genre-checkbox">
@@ -394,7 +394,8 @@
 		gap: var(--space-2);
 	}
 
-	label {
+	label,
+	.label {
 		font-weight: 600;
 		color: var(--color-dark-medium);
 		font-size: 0.95rem;
