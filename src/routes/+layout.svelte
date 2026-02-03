@@ -61,10 +61,12 @@
 {#if authStore.isAuthenticated}
 	<nav class="navbar">
 		<div class="nav-container">
-			<a href="/" class="nav-brand">MyShowList</a>
-			<div class="nav-links">
-				<a href="/" class="nav-link">Home</a>
-				<a href="/mylist" class="nav-link">My List</a>
+			<div class="nav-left">
+				<a href="/" class="nav-brand">MyShowList</a>
+				<div class="nav-links">
+					<a href="/" class="nav-link">Home</a>
+					<a href="/mylist" class="nav-link">My List</a>
+				</div>
 			</div>
 			<div class="nav-items">
 				{#if authStore.user?.role === 'ADMIN'}
@@ -94,6 +96,12 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+	}
+
+	.nav-left {
+		display: flex;
+		align-items: center;
+		gap: var(--space-8);
 	}
 
 	.nav-brand {
