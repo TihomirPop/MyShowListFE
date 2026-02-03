@@ -238,33 +238,6 @@
 			</div>
 		{/if}
 	</section>
-
-	<div class="features">
-		<div class="feature-card">
-			<div class="feature-icon">📺</div>
-			<h3>Track Your Shows</h3>
-			<p>Keep track of all your favorite TV shows and movies in one place.</p>
-		</div>
-
-		<div class="feature-card">
-			<div class="feature-icon">⭐</div>
-			<h3>Rate & Review</h3>
-			<p>Share your thoughts and rate shows to remember what you loved.</p>
-		</div>
-
-		<div class="feature-card">
-			<div class="feature-icon">📊</div>
-			<h3>Track Progress</h3>
-			<p>Monitor your watching progress and discover what to watch next.</p>
-		</div>
-
-		<div class="feature-card">
-			<div class="feature-icon">🔍</div>
-			<h3>Discover More</h3>
-			<p>Find new shows based on your preferences and viewing history.</p>
-		</div>
-	</div>
-
 </div>
 
 <style>
@@ -291,44 +264,6 @@
 		font-size: var(--font-size-xl);
 		color: var(--color-gray);
 		margin: 0;
-	}
-
-	.features {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: var(--space-6);
-		margin-bottom: var(--space-12);
-	}
-
-	.feature-card {
-		background: var(--color-white);
-		padding: var(--space-8);
-		border-radius: var(--radius-lg);
-		box-shadow: var(--shadow-md);
-		transition: transform var(--transition-base), box-shadow var(--transition-base);
-		text-align: center;
-	}
-
-	.feature-card:hover {
-		transform: translateY(-4px);
-		box-shadow: var(--shadow-lg);
-	}
-
-	.feature-icon {
-		font-size: 3rem;
-		margin-bottom: var(--space-4);
-	}
-
-	.feature-card h3 {
-		margin: 0 0 var(--space-3) 0;
-		color: var(--color-dark-medium);
-		font-size: var(--font-size-xl);
-	}
-
-	.feature-card p {
-		margin: 0;
-		color: var(--color-gray);
-		line-height: 1.6;
 	}
 
 	.shows-section {
@@ -431,10 +366,6 @@
 	.sort-direction-btn:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
-	}
-
-	.direction-label {
-		font-size: 0.9rem;
 	}
 
 	.empty-state p {
@@ -599,8 +530,5 @@
 			grid-template-columns: 1fr;
 		}
 
-		.features {
-			grid-template-columns: 1fr;
-		}
 	}
 </style>
