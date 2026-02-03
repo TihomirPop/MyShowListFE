@@ -185,10 +185,7 @@
 				aria-label="Toggle sort direction"
 				title={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
 			>
-				{sortDirection === 'asc' ? '↑' : '↓'}
-				<span class="direction-label"
-					>{sortDirection === 'asc' ? 'Ascending' : 'Descending'}</span
-				>
+				{sortDirection === 'asc' ? '⭡' : '⭣'}
 			</button>
 		</div>
 
